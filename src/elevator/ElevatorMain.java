@@ -9,8 +9,15 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.HashMap;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 /**
  *
@@ -18,7 +25,19 @@ import javax.swing.JPanel;
  */
 public class ElevatorMain extends javax.swing.JFrame
 {
+    int delay;
+    Timer timer1;
+    Elevator elevator;
+    
+    HashMap<Integer, Integer> pickUp;
     ImageIcon logo = new javax.swing.ImageIcon(getClass().getResource("/elevator/logo.png"));
+    
+    ButtonListenerBottom blb;
+    ButtonListenerFloors blf;
+    MouseClickListener mcl;
+    
+    Color c = new Color(153,204,255);
+    Color n = new Color(102,102,102);
     
     /**
      * Creates new form ElevatorMain
@@ -27,6 +46,36 @@ public class ElevatorMain extends javax.swing.JFrame
     {
         initComponents();
         this.setLocationRelativeTo(null);
+        
+        elevator = new Elevator(0,0,0,0);
+        
+        delay = 20;
+        timer1 = new Timer(delay, new TimerListener());
+        
+        blb  = new ButtonListenerBottom();
+        blf = new ButtonListenerFloors();
+        mcl = new MouseClickListener();
+                
+        startButton.addActionListener(blb);
+        stopButton.addActionListener(blb);
+        colourButton.addActionListener(blb);
+        quitButton.addActionListener(blb);
+        
+        oneButton.addActionListener(blf); oneButton.addMouseListener(mcl);
+        twoButton.addActionListener(blf); twoButton.addMouseListener(mcl);
+        threeButton.addActionListener(blf); threeButton.addMouseListener(mcl);
+        fourButton.addActionListener(blf); fourButton.addMouseListener(mcl);
+        fiveButton.addActionListener(blf); fiveButton.addMouseListener(mcl);
+        sixButton.addActionListener(blf); sixButton.addMouseListener(mcl);
+        sevenButton.addActionListener(blf); sevenButton.addMouseListener(mcl);
+        eightButton.addActionListener(blf); eightButton.addMouseListener(mcl);
+        
+        pickUp = new HashMap<Integer, Integer>();
+        for (int i = 1; i<9; i++)
+        {
+            pickUp.put(i, 0);
+        }
+        System.out.println(pickUp);
     }
 
     /**
@@ -59,6 +108,7 @@ public class ElevatorMain extends javax.swing.JFrame
         innerCenterPanel = new innerCenterPanel();
         innerRightPanel = new javax.swing.JPanel();
         speedSlider = new javax.swing.JSlider();
+        jLabel2 = new javax.swing.JLabel();
         bottomPanel = new javax.swing.JPanel();
         bottomLeftPanel = new javax.swing.JPanel();
         floorComboBox = new javax.swing.JComboBox();
@@ -99,7 +149,7 @@ public class ElevatorMain extends javax.swing.JFrame
 
         upperTopRightPanel.setBackground(new java.awt.Color(153, 204, 255));
         upperTopRightPanel.setPreferredSize(new java.awt.Dimension(50, 70));
-        upperTopRightPanel.setLayout(new java.awt.GridLayout());
+        upperTopRightPanel.setLayout(new java.awt.GridLayout(1, 0));
 
         jLabel1.setFont(new java.awt.Font("Nyala", 1, 48)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(102, 102, 102));
@@ -110,8 +160,7 @@ public class ElevatorMain extends javax.swing.JFrame
         topRightPanel.add(upperTopRightPanel, java.awt.BorderLayout.NORTH);
 
         statusLabel.setForeground(new java.awt.Color(102, 102, 102));
-        statusLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        statusLabel.setText("Picking up [3] passengers on level [6]");
+        statusLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         topRightPanel.add(statusLabel, java.awt.BorderLayout.CENTER);
 
         topPanel.add(topRightPanel, java.awt.BorderLayout.CENTER);
@@ -186,16 +235,17 @@ public class ElevatorMain extends javax.swing.JFrame
         centerPanel.add(innerLeftPanel, java.awt.BorderLayout.WEST);
 
         innerCenterPanel.setBackground(new java.awt.Color(204, 204, 204));
+        innerCenterPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255), 3));
 
         javax.swing.GroupLayout innerCenterPanelLayout = new javax.swing.GroupLayout(innerCenterPanel);
         innerCenterPanel.setLayout(innerCenterPanelLayout);
         innerCenterPanelLayout.setHorizontalGroup(
             innerCenterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 426, Short.MAX_VALUE)
+            .addGap(0, 420, Short.MAX_VALUE)
         );
         innerCenterPanelLayout.setVerticalGroup(
             innerCenterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 328, Short.MAX_VALUE)
+            .addGap(0, 322, Short.MAX_VALUE)
         );
 
         centerPanel.add(innerCenterPanel, java.awt.BorderLayout.CENTER);
@@ -203,7 +253,7 @@ public class ElevatorMain extends javax.swing.JFrame
         innerRightPanel.setBackground(new java.awt.Color(255, 255, 204));
         innerRightPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         innerRightPanel.setPreferredSize(new java.awt.Dimension(80, 100));
-        innerRightPanel.setLayout(new java.awt.GridLayout());
+        innerRightPanel.setLayout(new java.awt.BorderLayout(0, 5));
 
         speedSlider.setBackground(new java.awt.Color(51, 255, 0));
         speedSlider.setForeground(new java.awt.Color(0, 102, 102));
@@ -213,8 +263,14 @@ public class ElevatorMain extends javax.swing.JFrame
         speedSlider.setPaintLabels(true);
         speedSlider.setPaintTicks(true);
         speedSlider.setSnapToTicks(true);
+        speedSlider.setValue(100);
         speedSlider.setOpaque(false);
-        innerRightPanel.add(speedSlider);
+        innerRightPanel.add(speedSlider, java.awt.BorderLayout.CENTER);
+
+        jLabel2.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setText("Speed");
+        innerRightPanel.add(jLabel2, java.awt.BorderLayout.NORTH);
 
         centerPanel.add(innerRightPanel, java.awt.BorderLayout.EAST);
 
@@ -310,6 +366,7 @@ public class ElevatorMain extends javax.swing.JFrame
     private javax.swing.JPanel innerLeftPanel;
     private javax.swing.JPanel innerRightPanel;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JButton oneButton;
     private javax.swing.JButton quitButton;
@@ -333,6 +390,7 @@ public class ElevatorMain extends javax.swing.JFrame
     {
         int interval = 0;
         int original = 0;
+        boolean first = true;
         
         @Override
         protected void paintComponent(Graphics g) 
@@ -342,7 +400,8 @@ public class ElevatorMain extends javax.swing.JFrame
             g2.setStroke(new BasicStroke(3));
             interval = this.getHeight()/8;
             original = interval;
-            g2.setColor(new Color(153,153,153));
+            g2.setColor(Color.white);
+            //g2.drawLine(0, 0, 0, this.getHeight());
             
             // Draw all the horizontal (floors) lines.
             for (int i = 0; i<8; i++)
@@ -351,13 +410,23 @@ public class ElevatorMain extends javax.swing.JFrame
                 interval += this.getHeight()/8;
             }
             
+            // Set up elevator
+            elevator.setLimitX((this.getHeight()));
+            elevator.setHeight((this.getHeight()/8)-7);
+            elevator.setWidth(40);
+            elevator.setX((this.getWidth()/2)-20);
+            if (first == true)
+            {
+                elevator.setY((this.getHeight())-elevator.getHeight()-5);
+                first = false;
+            }
+            
             // Draw elevator
             g2.setColor(Color.GRAY);
-            g2.drawRect((this.getWidth()/2)-20, 
-                    (this.getHeight()/8)-(original-5), 
-                    40, 
-                    original-8);
-            
+            g2.fillRect(elevator.getX(), 
+                        elevator.getY(), 
+                        elevator.getWidth(), 
+                        elevator.getHeight());
             
         }
     }
@@ -366,12 +435,260 @@ public class ElevatorMain extends javax.swing.JFrame
     // Image is drawn on JPanel (Logo).
     class logoPanel extends JPanel
     {
-//        @Override
-//        protected void paintComponent(Graphics g) 
-//        {
-//            super.paintComponent(g);
-//            g.drawImage(logo.getImage(), 0, 0, super.getWidth(), super.getHeight(), null);
-//        }
+        @Override
+        protected void paintComponent(Graphics g) 
+        {
+            super.paintComponent(g);
+            g.drawImage(logo.getImage(), 0, 0, super.getWidth(), super.getHeight(), null);
+        }
+    }
+    
+    // All of the listeners:
+    // Timer listener for elevator animation.
+    class TimerListener implements ActionListener
+    {
+        int previous = 1;
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            elevator.update();
+            repaint();
+            
+            statusLabel.setText(""+elevator.getCurrentFloor());
+        }
+    }
+    
+    // Button Listener for bottom buttons.
+    class ButtonListenerBottom implements ActionListener
+    {
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            if (e.getSource() == startButton)
+                timer1.start();
+            else if (e.getSource() == stopButton)
+                timer1.stop();
+            else if (e.getSource() == colourButton)
+                System.out.println("Colour Button");
+            else
+                System.exit(0);
+        }
+        
+    }
+    
+    // Button Listener for floor buttons.
+    class ButtonListenerFloors implements ActionListener
+    {
+        
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+           if (e.getSource() == eightButton)
+           {
+               pickUp.put(8, pickUp.get(8) + 1);
+               
+               if (pickUp.get(8)>0)
+               {
+                   eightButton.setBackground(c);
+                   eightButton.setText("8 (" + pickUp.get(8) + ")");
+               }
+               else
+               {
+                   eightButton.setBackground(n);
+                   eightButton.setText("8");
+               }
+           }
+           else if (e.getSource() == sevenButton)
+           {
+               pickUp.put(7, pickUp.get(7) + 1);
+               sevenButton.setText("7 (" + pickUp.get(7) + ")");
+               sevenButton.setBackground(c);
+           }
+           else if (e.getSource() == sixButton)
+           {
+               pickUp.put(6, pickUp.get(6) + 1);
+               sixButton.setText("6 (" + pickUp.get(6) + ")");
+               sixButton.setBackground(c);
+           }
+           else if (e.getSource() == fiveButton)
+           {
+               pickUp.put(5, pickUp.get(5) + 1);
+               fiveButton.setText("5 (" + pickUp.get(5) + ")");
+               fiveButton.setBackground(c);
+           }
+           else if (e.getSource() == fourButton)
+           {
+               pickUp.put(4, pickUp.get(4) + 1);
+               fourButton.setText("4 (" + pickUp.get(4) + ")");
+               fourButton.setBackground(c);
+           }
+           else if (e.getSource() == threeButton)
+           {
+               pickUp.put(3, pickUp.get(3) + 1);
+               threeButton.setText("3 (" + pickUp.get(3) + ")");
+               threeButton.setBackground(c);
+           }
+           else if (e.getSource() == twoButton)
+           {
+               pickUp.put(2, pickUp.get(2) + 1);
+               twoButton.setText("2 (" + pickUp.get(2) + ")");
+               twoButton.setBackground(c);
+           }
+           else if (e.getSource() == oneButton)
+           {
+               pickUp.put(1, pickUp.get(1) + 1);
+               oneButton.setText("1 (" + pickUp.get(1) + ")");
+               oneButton.setBackground(c);
+               
+           }
+           System.out.println(pickUp);
+        }
+    }
+    
+    // Mouse Listener for right-click
+    class MouseClickListener implements MouseListener
+    {
+        @Override
+        public void mouseClicked(MouseEvent e)
+        {
+            if (SwingUtilities.isRightMouseButton(e))
+            {
+               if (e.getSource() == eightButton)
+               {
+                   if (pickUp.get(8) > 1)
+                   {
+                        pickUp.put(8, pickUp.get(8) - 1);
+                        eightButton.setText("8 (" + pickUp.get(8) + ")");
+                        System.out.println(pickUp);
+                   }
+                   else
+                   {
+                        pickUp.put(8, 0);
+                        eightButton.setBackground(n);
+                        eightButton.setText("8");
+                        System.out.println(pickUp);
+                   }
+               }
+               else if (e.getSource() == sevenButton)
+               {
+                   if (pickUp.get(7) > 1)
+                   {
+                        pickUp.put(7, pickUp.get(7) - 1);
+                        sevenButton.setText("7 (" + pickUp.get(7) + ")");
+                        System.out.println(pickUp);
+                   }
+                   else
+                   {
+                        pickUp.put(7, 0);
+                        sevenButton.setBackground(n);
+                        sevenButton.setText("7");
+                        System.out.println(pickUp);
+                   }
+               }
+               else if (e.getSource() == sixButton)
+               {
+                   if (pickUp.get(6) > 1)
+                   {
+                        pickUp.put(6, pickUp.get(6) - 1);
+                        sixButton.setText("6 (" + pickUp.get(6) + ")");
+                        System.out.println(pickUp);
+                   }
+                   else
+                   {
+                        pickUp.put(6, 0);
+                        sixButton.setBackground(n);
+                        sixButton.setText("6");
+                        System.out.println(pickUp);
+                   }
+               }
+               else if (e.getSource() == fiveButton)
+               {
+                   if (pickUp.get(5) > 1)
+                   {
+                        pickUp.put(5, pickUp.get(5) - 1);
+                        fiveButton.setText("5 (" + pickUp.get(5) + ")");
+                        System.out.println(pickUp);
+                   }
+                   else
+                   {
+                        pickUp.put(5, 0);
+                        fiveButton.setBackground(n);
+                        fiveButton.setText("5");
+                        System.out.println(pickUp);
+                   }
+               }
+               else if (e.getSource() == fourButton)
+               {
+                   if (pickUp.get(4) > 1)
+                   {
+                        pickUp.put(4, pickUp.get(8) - 1);
+                        fourButton.setText("4 (" + pickUp.get(4) + ")");
+                        System.out.println(pickUp);
+                   }
+                   else
+                   {
+                        pickUp.put(4, 0);
+                        fourButton.setBackground(n);
+                        fourButton.setText("4");
+                        System.out.println(pickUp);
+                   }
+               }
+               else if (e.getSource() == threeButton)
+               {
+                   if (pickUp.get(3) > 1)
+                   {
+                        pickUp.put(3, pickUp.get(3) - 1);
+                        threeButton.setText("3 (" + pickUp.get(3) + ")");
+                        System.out.println(pickUp);
+                   }
+                   else
+                   {
+                        pickUp.put(3, 0);
+                        threeButton.setBackground(n);
+                        threeButton.setText("3");
+                        System.out.println(pickUp);
+                   }
+               }
+               else if (e.getSource() == twoButton)
+               {
+                   if (pickUp.get(2) > 1)
+                   {
+                        pickUp.put(2, pickUp.get(2) - 1);
+                        twoButton.setText("2 (" + pickUp.get(2) + ")");
+                        System.out.println(pickUp);
+                   }
+                   else
+                   {
+                        pickUp.put(2, 0);
+                        twoButton.setBackground(n);
+                        twoButton.setText("2");
+                        System.out.println(pickUp);
+                   }
+               }
+               else if (e.getSource() == oneButton)
+               {
+                   if (pickUp.get(1) > 1)
+                   {
+                        pickUp.put(1, pickUp.get(1) - 1);
+                        oneButton.setText("1 (" + pickUp.get(1) + ")");
+                        System.out.println(pickUp);
+                   }
+                   else
+                   {
+                        pickUp.put(1, 0);
+                        oneButton.setBackground(n);
+                        oneButton.setText("1");
+                        System.out.println(pickUp);
+                   }
+               }
+            }
+        }
+
+        @Override public void mousePressed(MouseEvent e){}
+        @Override public void mouseReleased(MouseEvent e){}
+        @Override public void mouseEntered(MouseEvent e){}
+        @Override public void mouseExited(MouseEvent e){}
+            
     }
 
 }
