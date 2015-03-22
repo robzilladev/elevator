@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package elevator;
 
 import java.awt.BasicStroke;
@@ -13,29 +8,35 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
-/**
- *
- * @author rob
- */
 public class ElevatorMain extends javax.swing.JFrame
 {
-    int delay;
+    int delay, floorsAvail;
     Timer timer1;
-    Elevator elevator;
+    Elevator elevator; // Main elevator object.
     
-    HashMap<Integer, Integer> pickUp;
+    HashMap<Integer, Integer> pickUp; // Maps number of button clicks to the appropriate floors.
+    ArrayList<JButton> floors; // List of buttons for easy access later.
+    
     ImageIcon logo = new javax.swing.ImageIcon(getClass().getResource("/elevator/logo.png"));
     
+    // Listeners
     ButtonListenerBottom blb;
     ButtonListenerFloors blf;
     MouseClickListener mcl;
+    ComboListener cl;
     
+    // Colours for floor buttons (clicked/non-clicked)
     Color c = new Color(153,204,255);
     Color n = new Color(102,102,102);
     
@@ -47,14 +48,18 @@ public class ElevatorMain extends javax.swing.JFrame
         initComponents();
         this.setLocationRelativeTo(null);
         
-        elevator = new Elevator(0,0,0,0);
-        
-        delay = 20;
+        delay = 10;
         timer1 = new Timer(delay, new TimerListener());
+        
+        floorsAvail = 8;
+        elevator = new Elevator(0,0,0,0,timer1);
+        
+        
         
         blb  = new ButtonListenerBottom();
         blf = new ButtonListenerFloors();
         mcl = new MouseClickListener();
+        cl = new ComboListener();
                 
         startButton.addActionListener(blb);
         stopButton.addActionListener(blb);
@@ -70,12 +75,20 @@ public class ElevatorMain extends javax.swing.JFrame
         sevenButton.addActionListener(blf); sevenButton.addMouseListener(mcl);
         eightButton.addActionListener(blf); eightButton.addMouseListener(mcl);
         
+        floorComboBox.addActionListener(cl);
+        
+        // Set up button/click count mapping.
         pickUp = new HashMap<Integer, Integer>();
         for (int i = 1; i<9; i++)
         {
             pickUp.put(i, 0);
         }
-        System.out.println(pickUp);
+        
+        // Add all buttons to list for easy access later.
+        floors = new ArrayList<JButton>();
+        floors.add(oneButton); floors.add(twoButton); floors.add(threeButton); 
+        floors.add(fourButton); floors.add(fiveButton); floors.add(sixButton); 
+        floors.add(sevenButton); floors.add(eightButton); 
     }
 
     /**
@@ -120,6 +133,13 @@ public class ElevatorMain extends javax.swing.JFrame
         quitButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addComponentListener(new java.awt.event.ComponentAdapter()
+        {
+            public void componentResized(java.awt.event.ComponentEvent evt)
+            {
+                formComponentResized(evt);
+            }
+        });
 
         mainPanel.setPreferredSize(new java.awt.Dimension(800, 600));
         mainPanel.setLayout(new java.awt.BorderLayout());
@@ -147,12 +167,12 @@ public class ElevatorMain extends javax.swing.JFrame
         topRightPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         topRightPanel.setLayout(new java.awt.BorderLayout(0, 2));
 
-        upperTopRightPanel.setBackground(new java.awt.Color(153, 204, 255));
+        upperTopRightPanel.setBackground(new java.awt.Color(255, 239, 0));
         upperTopRightPanel.setPreferredSize(new java.awt.Dimension(50, 70));
         upperTopRightPanel.setLayout(new java.awt.GridLayout(1, 0));
 
-        jLabel1.setFont(new java.awt.Font("Nyala", 1, 48)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel1.setFont(new java.awt.Font("Gill Sans MT Condensed", 1, 56)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(153, 153, 153));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Elevator Simulator");
         upperTopRightPanel.add(jLabel1);
@@ -296,7 +316,7 @@ public class ElevatorMain extends javax.swing.JFrame
         bottomCenterPanel.setPreferredSize(new java.awt.Dimension(500, 500));
         bottomCenterPanel.setLayout(new java.awt.GridLayout(1, 0, 10, 0));
 
-        startButton.setBackground(new java.awt.Color(153, 153, 153));
+        startButton.setBackground(new java.awt.Color(138, 138, 138));
         startButton.setForeground(new java.awt.Color(255, 255, 255));
         startButton.setText("Start");
         startButton.setBorderPainted(false);
@@ -335,6 +355,11 @@ public class ElevatorMain extends javax.swing.JFrame
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void formComponentResized(java.awt.event.ComponentEvent evt)//GEN-FIRST:event_formComponentResized
+    {//GEN-HEADEREND:event_formComponentResized
+        // TODO: reposition elevator rectangle when window is resized and timer is not running.
+    }//GEN-LAST:event_formComponentResized
 
     /**
      * @param args the command line arguments
@@ -389,9 +414,12 @@ public class ElevatorMain extends javax.swing.JFrame
     class innerCenterPanel extends JPanel
     {
         int interval = 0;
-        int original = 0;
         boolean first = true;
         
+        // PaintComponent is called every time the timer generates an event.
+        // Measurements should be re-calculated here so that the positioning of the
+        // painted panel is always correct.
+        // However, keep processing to a minimum here to avoid lag.
         @Override
         protected void paintComponent(Graphics g) 
         {
@@ -399,9 +427,7 @@ public class ElevatorMain extends javax.swing.JFrame
             Graphics2D g2 = (Graphics2D) g;
             g2.setStroke(new BasicStroke(3));
             interval = this.getHeight()/8;
-            original = interval;
             g2.setColor(Color.white);
-            //g2.drawLine(0, 0, 0, this.getHeight());
             
             // Draw all the horizontal (floors) lines.
             for (int i = 0; i<8; i++)
@@ -410,7 +436,7 @@ public class ElevatorMain extends javax.swing.JFrame
                 interval += this.getHeight()/8;
             }
             
-            // Set up elevator
+            // Set up elevator.
             elevator.setLimitX((this.getHeight()));
             elevator.setHeight((this.getHeight()/8)-7);
             elevator.setWidth(40);
@@ -421,12 +447,15 @@ public class ElevatorMain extends javax.swing.JFrame
                 first = false;
             }
             
-            // Draw elevator
+            // Draw elevator.
             g2.setColor(Color.GRAY);
             g2.fillRect(elevator.getX(), 
                         elevator.getY(), 
                         elevator.getWidth(), 
                         elevator.getHeight());
+            
+            // Set the upper limit for animation.
+            elevator.setUpper(this.getHeight(),floorsAvail);
             
         }
     }
@@ -451,7 +480,13 @@ public class ElevatorMain extends javax.swing.JFrame
         @Override
         public void actionPerformed(ActionEvent e)
         {
-            elevator.update();
+            try
+            {
+                elevator.update(pickUp);
+            } catch (InterruptedException ex)
+            {
+                Logger.getLogger(ElevatorMain.class.getName()).log(Level.SEVERE, null, ex);
+            }
             repaint();
             
             statusLabel.setText(""+elevator.getCurrentFloor());
@@ -461,17 +496,33 @@ public class ElevatorMain extends javax.swing.JFrame
     // Button Listener for bottom buttons.
     class ButtonListenerBottom implements ActionListener
     {
+        // Colors to represent enabled/disabled (buttons).
+        Color dis = new Color(102,102,102);
+        Color en = new Color(138,138,138);
+        
         @Override
         public void actionPerformed(ActionEvent e)
         {
             if (e.getSource() == startButton)
+            {
                 timer1.start();
+                startButton.setEnabled(false);
+                startButton.setBackground(dis);
+                stopButton.setEnabled(true);
+                stopButton.setBackground(en);
+            }
             else if (e.getSource() == stopButton)
+            {
                 timer1.stop();
+                stopButton.setEnabled(false);
+                stopButton.setBackground(dis);
+                startButton.setEnabled(true);
+                startButton.setBackground(en);
+            }
             else if (e.getSource() == colourButton)
-                System.out.println("Colour Button");
+                System.out.println("Colour Button"); // !!Add theme functionality.
             else
-                System.exit(0);
+                System.exit(0); // Close program.
         }
         
     }
@@ -479,7 +530,6 @@ public class ElevatorMain extends javax.swing.JFrame
     // Button Listener for floor buttons.
     class ButtonListenerFloors implements ActionListener
     {
-        
         @Override
         public void actionPerformed(ActionEvent e)
         {
@@ -545,13 +595,17 @@ public class ElevatorMain extends javax.swing.JFrame
         }
     }
     
-    // Mouse Listener for right-click
+    // Mouse Listener for right-click.
+    // If a button is right clicked and that button has a pickup value greater than 0,
+    // that number is decreased by 1, until 0.
     class MouseClickListener implements MouseListener
     {
+        JButton temp;
         @Override
         public void mouseClicked(MouseEvent e)
         {
-            if (SwingUtilities.isRightMouseButton(e))
+            temp = (JButton)e.getSource();
+            if (SwingUtilities.isRightMouseButton(e) && temp.isEnabled())
             {
                if (e.getSource() == eightButton)
                {
@@ -621,7 +675,7 @@ public class ElevatorMain extends javax.swing.JFrame
                {
                    if (pickUp.get(4) > 1)
                    {
-                        pickUp.put(4, pickUp.get(8) - 1);
+                        pickUp.put(4, pickUp.get(4) - 1);
                         fourButton.setText("4 (" + pickUp.get(4) + ")");
                         System.out.println(pickUp);
                    }
@@ -684,11 +738,68 @@ public class ElevatorMain extends javax.swing.JFrame
             }
         }
 
+        // Implement abstract methods.
         @Override public void mousePressed(MouseEvent e){}
         @Override public void mouseReleased(MouseEvent e){}
         @Override public void mouseEntered(MouseEvent e){}
         @Override public void mouseExited(MouseEvent e){}
             
     }
-
+    
+    class ComboListener implements ActionListener
+    {
+        JComboBox cb;
+        String selection;
+        
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            cb = (JComboBox)e.getSource();
+            selection = (String)cb.getSelectedItem();
+            
+            switch (selection)
+            {
+                case "8 Floors": 
+                    System.out.println(8);
+                    floorsAvail=8;
+                    break;
+                case "7 Floors":
+                    System.out.println(7);
+                    floorsAvail=7;
+                    break;
+                case "6 Floors":
+                    System.out.println(6);
+                    floorsAvail=6;
+                    break;
+                case "5 Floors":
+                    System.out.println(5);
+                    floorsAvail=5;
+                    break;
+                case "4 Floors":
+                    System.out.println(4);
+                    floorsAvail=4;
+                    break;
+                case "3 Floors":
+                    System.out.println(3);
+                    floorsAvail=3;
+                    break;
+                case "2 Floors":
+                    System.out.println(2);
+                    floorsAvail=2;
+                    break;
+                default:
+                    System.out.println("Something went wrong: defaulting to 8 floors");   
+                    floorsAvail = 8;
+            }
+            
+            for(JButton j: floors)
+            {
+                j.setEnabled(true);
+            }
+            for (int i = floorsAvail; i<floors.size(); i++)
+            {
+                floors.get(i).setEnabled(false);
+            }
+        } 
+    }
 }
