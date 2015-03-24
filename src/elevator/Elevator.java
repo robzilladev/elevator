@@ -121,7 +121,7 @@ public class Elevator
     }
     
     // Method not finished yet!
-    public HashMap update(HashMap m) throws InterruptedException
+    public HashMap update(HashMap m)
     {
         checkFloor();
         

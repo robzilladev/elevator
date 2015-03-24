@@ -481,15 +481,8 @@ public class ElevatorMain extends javax.swing.JFrame
         @Override
         public void actionPerformed(ActionEvent e)
         {
-            try
-            {
-                elevator.update(pickUp);
-            } catch (InterruptedException ex)
-            {
-                Logger.getLogger(ElevatorMain.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            elevator.update(pickUp);
             repaint();
-            
             statusLabel.setText(""+elevator.getCurrentFloor());
         }
     }
