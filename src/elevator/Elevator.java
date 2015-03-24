@@ -2,11 +2,14 @@
 // Holds dimension, location and other data.
 package elevator;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
+import javax.swing.JButton;
+import javax.swing.JPanel;
 import javax.swing.Timer;
 
 public class Elevator
@@ -15,13 +18,20 @@ public class Elevator
     private int x, y, limitX;
     private int dif;
     private int currentFloor, upper;
-    private String direction;
+    private int direction = 1;
     private ArrayList floors;
+    private ArrayList<JButton> buttons;
     private Timer t, t2;
     private int delay = 1000;
-    private int wait = 2;
+    private int wait = 1;
+    private boolean stop = false;
+    
+    //Testing callback
+    private JPanel callback;
+    
+    Color n = new Color(102,102,102);
 
-    public Elevator(int width, int height, int x, int y, Timer t)
+    public Elevator(int width, int height, int x, int y, Timer t, ArrayList a, JPanel callback)
     {
         this.width = width;
         this.height = height;
@@ -33,6 +43,8 @@ public class Elevator
         floors = new ArrayList<>();
         t2 = new Timer(delay, new T2Listener());
         this.t = t;
+        buttons = a;
+        this.callback = callback;
     }
 
     public int getWidth()
@@ -109,64 +121,124 @@ public class Elevator
     }
     
     // Method not finished yet!
-    public void update(HashMap m) throws InterruptedException
+    public HashMap update(HashMap m) throws InterruptedException
     {
         checkFloor();
         
+        // Level 8.
         if (y+height == (int)floors.get(0)-3 && y > (int)floors.get(0)-height-7 && (int)m.get(8) > 0)
         {
+            y = (int)(floors.get(0))-height-3;
+            stop = true;
             t.stop();
             System.out.println("Level 8");
-            t.start();
-        }
-        else if (y+height == (int)floors.get(1)-3 && y > (int)floors.get(1)-height-7 && (int)m.get(7) > 0)
-        {
-            t.stop();
-            System.out.println("Level 7");
-            t.start();
-        }
-        else if (y+height == (int)floors.get(2)-3 && y > (int)floors.get(2)-height-7 && (int)m.get(6) > 0)
-        {
-            t.stop();
-            System.out.println("Level 6");
-            t.start();
-        }
-        else if (y+height == (int)floors.get(3)-3 && y > (int)floors.get(3)-height-7 && (int)m.get(5) > 0)
-        {
-            t.stop();
-            System.out.println("Level 5");
+            setWait((int)m.get(8));
+            m.put(8, 0);
             t2.start();
-        }
-        else if (y+height == (int)floors.get(4)-3 && y > (int)floors.get(3)-height-7 && (int)m.get(4) > 0)
-        {
-            t.stop();
-            System.out.println((int)m.get(4));
-            t2.start();
-        }
-        else if (y+height == (int)floors.get(5)-3 && y > (int)floors.get(5)-height-7 && (int)m.get(3) > 0)
-        {
-            t.stop();
-            System.out.println((int)m.get(3));
-            t.start();
-        }
-        else if (y+height == (int)floors.get(6)-3 && y > (int)floors.get(6)-height-7 && (int)m.get(2) > 0)
-        {
-            t.stop();
-            System.out.println("Level 2");
-            t.start();
-        }
-        else if (y+height < (int)floors.get(7)-1 && y > (int)floors.get(7)-height-4 && (int)m.get(1) > 0)
-        {
-            t.stop();
-            System.out.println("Level 1");
-            t.start();
         }
         
-        if (y < upper+4)
-            dif = 4;
-        else if (y > (limitX - height - 3))
-            dif = -4;
-        y = y + dif;
+        // Level 7.
+        else if (y+height == (int)floors.get(1)-3 && y > (int)floors.get(1)-height-7 && (int)m.get(7) > 0)
+        {
+            y = (int)(floors.get(1))-height-3;
+            stop = true;
+            t.stop();
+            System.out.println("Level 7");
+            setWait((int)m.get(7));
+            m.put(7, 0);
+            t2.start();
+        }
+        
+        // Level 6.
+        else if (y+height == (int)floors.get(2)-3 && y > (int)floors.get(2)-height-7 && (int)m.get(6) > 0)
+        {
+            y = (int)(floors.get(2))-height-3;
+            stop = true;
+            t.stop();
+            System.out.println("Level 6");
+            setWait((int)m.get(6));
+            m.put(6, 0);
+            t2.start();
+        }
+        
+        // Level 5.
+        else if (y+height < (int)floors.get(3) && y > (int)floors.get(3)-height-5 && (int)m.get(5) > 0)
+        {
+            y = (int)(floors.get(3))-height-3;
+            stop = true;
+            t.stop();
+            System.out.println("Level 5");
+            setWait((int)m.get(5));
+            m.put(5, 0);
+            t2.start();
+        }
+        
+        // Level 4.
+        else if (y+height < (int)floors.get(4) && y > (int)floors.get(4)-height-5 && (int)m.get(4) > 0)
+        {
+            y = (int)(floors.get(4))-height-3;
+            stop = true;
+            t.stop();
+            System.out.println("Level 4");
+            setWait((int)m.get(4));
+            m.put(4, 0);
+            t2.start();
+        }
+        
+        // Level 3.
+        else if (y+height < (int)floors.get(5) && y > (int)floors.get(5)-height-5 && (int)m.get(3) > 0)
+        {
+            y = (int)(floors.get(5))-height-3;
+            stop = true;
+            t.stop();
+            System.out.println("Level 3");
+            setWait((int)m.get(3));
+            m.put(3, 0);
+            t2.start();
+        }
+        
+        // Level 2.
+        else if (y+height < (int)floors.get(6) && y > (int)floors.get(6)-height-5 && (int)m.get(2) > 0)
+        {
+            y = (int)(floors.get(6))-height-3;
+            stop = true;
+            t.stop();
+            System.out.println("Level 2");
+            setWait((int)m.get(2));
+            m.put(2, 0);
+            t2.start();
+        }
+        
+        // Level 1.
+        else if (y+height < (int)floors.get(7)-1 && y > (int)floors.get(7)-height-4 && (int)m.get(1) > 0)
+        {
+            y = (int)(floors.get(7))-height-3;
+            stop = true;
+            t.stop();
+            System.out.println("Level 1");
+            setWait((int)m.get(1));
+            m.put(1, 0);
+            t2.start();
+        }
+        
+        
+        // Updating
+        if (stop != true)
+        {
+            if (y < upper+4)
+            {
+                dif = 4;
+                direction = 1;
+            }
+            else if (y > (limitX - height - 3))
+            {
+                dif = -4;
+                direction = -1;
+            }
+            y = y + dif;
+        }
+        
+        return m;
     }
     
     public int checkFloor()
@@ -227,20 +299,29 @@ public class Elevator
         return currentFloor;
     }
     
+    public void setWait(int i)
+    {
+        wait = i;
+    }
+    
     class T2Listener implements ActionListener
     {
         @Override
         public void actionPerformed(ActionEvent e)
         {
-            if (wait > 0)
+            if (wait > 1)
+            {
                 wait--;
+                buttons.get(currentFloor-1).setText(currentFloor + " (" + wait + ")");
+            }
             else
             {
                 t2.stop();
                 t.start();
-                wait = 2;
+                stop = false;
+                buttons.get(currentFloor-1).setText(currentFloor+"");
+                buttons.get(currentFloor-1).setBackground(n);
             }
         }
-        
     }
 }

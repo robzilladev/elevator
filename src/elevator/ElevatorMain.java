@@ -52,8 +52,6 @@ public class ElevatorMain extends javax.swing.JFrame
         timer1 = new Timer(delay, new TimerListener());
         
         floorsAvail = 8;
-        elevator = new Elevator(0,0,0,0,timer1);
-        
         
         
         blb  = new ButtonListenerBottom();
@@ -75,6 +73,8 @@ public class ElevatorMain extends javax.swing.JFrame
         sevenButton.addActionListener(blf); sevenButton.addMouseListener(mcl);
         eightButton.addActionListener(blf); eightButton.addMouseListener(mcl);
         
+        
+        
         floorComboBox.addActionListener(cl);
         
         // Set up button/click count mapping.
@@ -89,6 +89,7 @@ public class ElevatorMain extends javax.swing.JFrame
         floors.add(oneButton); floors.add(twoButton); floors.add(threeButton); 
         floors.add(fourButton); floors.add(fiveButton); floors.add(sixButton); 
         floors.add(sevenButton); floors.add(eightButton); 
+        elevator = new Elevator(0,0,0,0,timer1,floors,innerCenterPanel);
     }
 
     /**
