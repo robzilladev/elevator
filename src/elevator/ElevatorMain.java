@@ -89,7 +89,8 @@ public class ElevatorMain extends javax.swing.JFrame
         floors.add(oneButton); floors.add(twoButton); floors.add(threeButton); 
         floors.add(fourButton); floors.add(fiveButton); floors.add(sixButton); 
         floors.add(sevenButton); floors.add(eightButton); 
-        elevator = new Elevator(0,0,0,0,timer1,floors,innerCenterPanel);
+        
+        elevator = new Elevator(0,0,0,0,timer1,floors,this);
     }
 
     /**
@@ -105,6 +106,8 @@ public class ElevatorMain extends javax.swing.JFrame
         mainPanel = new javax.swing.JPanel();
         topPanel = new javax.swing.JPanel();
         topLeftPanel = new logoPanel();
+        floorHead = new javax.swing.JLabel();
+        floorLabel = new javax.swing.JLabel();
         topRightPanel = new javax.swing.JPanel();
         upperTopRightPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -149,18 +152,27 @@ public class ElevatorMain extends javax.swing.JFrame
         topPanel.setLayout(new java.awt.BorderLayout());
 
         topLeftPanel.setBackground(new java.awt.Color(153, 153, 153));
+        topLeftPanel.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(153, 153, 153)));
         topLeftPanel.setPreferredSize(new java.awt.Dimension(100, 100));
+        topLeftPanel.setLayout(new java.awt.GridLayout(2, 0));
 
-        javax.swing.GroupLayout topLeftPanelLayout = new javax.swing.GroupLayout(topLeftPanel);
-        topLeftPanel.setLayout(topLeftPanelLayout);
-        topLeftPanelLayout.setHorizontalGroup(
-            topLeftPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        topLeftPanelLayout.setVerticalGroup(
-            topLeftPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
+        floorHead.setBackground(new java.awt.Color(167, 209, 255));
+        floorHead.setFont(new java.awt.Font("Gill Sans MT Condensed", 0, 36)); // NOI18N
+        floorHead.setForeground(new java.awt.Color(102, 102, 102));
+        floorHead.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        floorHead.setText("Floor");
+        floorHead.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 0, 5, new java.awt.Color(107, 161, 173)));
+        floorHead.setOpaque(true);
+        topLeftPanel.add(floorHead);
+
+        floorLabel.setBackground(new java.awt.Color(167, 209, 255));
+        floorLabel.setFont(new java.awt.Font("Mistral", 0, 42)); // NOI18N
+        floorLabel.setForeground(new java.awt.Color(102, 102, 102));
+        floorLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        floorLabel.setText("1");
+        floorLabel.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 5, 5, new java.awt.Color(107, 161, 173)));
+        floorLabel.setOpaque(true);
+        topLeftPanel.add(floorLabel);
 
         topPanel.add(topLeftPanel, java.awt.BorderLayout.WEST);
 
@@ -168,20 +180,21 @@ public class ElevatorMain extends javax.swing.JFrame
         topRightPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         topRightPanel.setLayout(new java.awt.BorderLayout(0, 2));
 
-        upperTopRightPanel.setBackground(new java.awt.Color(255, 239, 0));
+        upperTopRightPanel.setBackground(new java.awt.Color(167, 209, 255));
         upperTopRightPanel.setPreferredSize(new java.awt.Dimension(50, 70));
         upperTopRightPanel.setLayout(new java.awt.GridLayout(1, 0));
 
         jLabel1.setFont(new java.awt.Font("Gill Sans MT Condensed", 1, 56)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(153, 153, 153));
+        jLabel1.setForeground(new java.awt.Color(102, 102, 102));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Elevator Simulator");
+        jLabel1.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 5, 5, new java.awt.Color(107, 161, 173)));
         upperTopRightPanel.add(jLabel1);
 
         topRightPanel.add(upperTopRightPanel, java.awt.BorderLayout.NORTH);
 
         statusLabel.setForeground(new java.awt.Color(102, 102, 102));
-        statusLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        statusLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         topRightPanel.add(statusLabel, java.awt.BorderLayout.CENTER);
 
         topPanel.add(topRightPanel, java.awt.BorderLayout.CENTER);
@@ -376,6 +389,11 @@ public class ElevatorMain extends javax.swing.JFrame
             }
         });
     }
+    
+    public void updatePickupLabel(int floor, int num)
+    {
+        statusLabel.setText("Picking up ["+ num +"] passengers on floor ["+ floor +"]");
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel bottomCenterPanel;
@@ -387,6 +405,8 @@ public class ElevatorMain extends javax.swing.JFrame
     private javax.swing.JButton eightButton;
     private javax.swing.JButton fiveButton;
     private javax.swing.JComboBox floorComboBox;
+    private javax.swing.JLabel floorHead;
+    static javax.swing.JLabel floorLabel;
     private javax.swing.JButton fourButton;
     private javax.swing.JPanel innerCenterPanel;
     private javax.swing.JPanel innerLeftPanel;
@@ -400,7 +420,7 @@ public class ElevatorMain extends javax.swing.JFrame
     private javax.swing.JButton sixButton;
     private javax.swing.JSlider speedSlider;
     private javax.swing.JButton startButton;
-    private javax.swing.JLabel statusLabel;
+    public static javax.swing.JLabel statusLabel;
     private javax.swing.JButton stopButton;
     private javax.swing.JButton threeButton;
     private javax.swing.JPanel topLeftPanel;
@@ -440,8 +460,8 @@ public class ElevatorMain extends javax.swing.JFrame
             // Set up elevator.
             elevator.setLimitX((this.getHeight()));
             elevator.setHeight((this.getHeight()/8)-7);
-            elevator.setWidth(40);
-            elevator.setX((this.getWidth()/2)-20);
+            elevator.setWidth(60);
+            elevator.setX((this.getWidth()/2)-(elevator.getWidth()/2));
             if (first == true)
             {
                 elevator.setY((this.getHeight())-elevator.getHeight()-5);
@@ -455,6 +475,12 @@ public class ElevatorMain extends javax.swing.JFrame
                         elevator.getWidth(), 
                         elevator.getHeight());
             
+            g2.setColor(Color.white);
+            g2.drawLine(elevator.getX()+(elevator.getWidth()/2),
+                        elevator.getY()+1,
+                        elevator.getX()+(elevator.getWidth()/2),
+                        elevator.getY()+(elevator.getHeight())-2);
+            
             // Set the upper limit for animation.
             elevator.setUpper(this.getHeight(),floorsAvail);
             
@@ -465,12 +491,12 @@ public class ElevatorMain extends javax.swing.JFrame
     // Image is drawn on JPanel (Logo).
     class logoPanel extends JPanel
     {
-        @Override
-        protected void paintComponent(Graphics g) 
-        {
-            super.paintComponent(g);
-            g.drawImage(logo.getImage(), 0, 0, super.getWidth(), super.getHeight(), null);
-        }
+//        @Override
+//        protected void paintComponent(Graphics g) 
+//        {
+//            super.paintComponent(g);
+//            g.drawImage(logo.getImage(), 0, 0, super.getWidth(), super.getHeight(), null);
+//        }
     }
     
     // All of the listeners:
@@ -483,7 +509,13 @@ public class ElevatorMain extends javax.swing.JFrame
         {
             elevator.update(pickUp);
             repaint();
-            statusLabel.setText(""+elevator.getCurrentFloor());
+            
+            if (elevator.getDirection() > 0 && !elevator.stopped())
+                statusLabel.setText("Going down...");
+            else if (elevator.getDirection() < 0 && !elevator.stopped())
+                statusLabel.setText("Going up...");
+            
+            floorLabel.setText(""+elevator.getCurrentFloor());
         }
     }
     
@@ -504,6 +536,7 @@ public class ElevatorMain extends javax.swing.JFrame
                 startButton.setBackground(dis);
                 stopButton.setEnabled(true);
                 stopButton.setBackground(en);
+                elevator.pushStart();
             }
             else if (e.getSource() == stopButton)
             {
@@ -512,6 +545,8 @@ public class ElevatorMain extends javax.swing.JFrame
                 stopButton.setBackground(dis);
                 startButton.setEnabled(true);
                 startButton.setBackground(en);
+                elevator.pushStop();
+                statusLabel.setText("Stopped...");
             }
             else if (e.getSource() == colourButton)
                 System.out.println("Colour Button"); // !!Add theme functionality.
