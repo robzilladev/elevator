@@ -80,6 +80,11 @@ public class Elevator
         return x;
     }
 
+    public boolean isStopped()
+    {
+        return stop;
+    }
+    
     public void setLimitX(int limitX)
     {
         this.limitX = limitX;

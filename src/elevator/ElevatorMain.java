@@ -736,60 +736,75 @@ public class ElevatorMain extends javax.swing.JFrame
         {
            if (e.getSource() == eightButton)
            {
-               pickUp.put(8, pickUp.get(8) + 1);
-               
-               if (pickUp.get(8)>0)
+               if (!elevator.isStopped() || elevator.getCurrentFloor() != 8)
                {
+                   pickUp.put(8, pickUp.get(8) + 1);
                    eightButton.setBackground(c);
                    eightButton.setText("8 (" + pickUp.get(8) + ")");
-               }
-               else
-               {
-                   eightButton.setBackground(n);
-                   eightButton.setText("8");
                }
            }
            else if (e.getSource() == sevenButton)
            {
-               pickUp.put(7, pickUp.get(7) + 1);
-               sevenButton.setText("7 (" + pickUp.get(7) + ")");
-               sevenButton.setBackground(c);
+               if (!elevator.isStopped() || elevator.getCurrentFloor() != 7)
+               {
+                   pickUp.put(7, pickUp.get(7) + 1);
+                   sevenButton.setText("7 (" + pickUp.get(7) + ")");
+                   sevenButton.setBackground(c);
+               }
            }
            else if (e.getSource() == sixButton)
            {
-               pickUp.put(6, pickUp.get(6) + 1);
-               sixButton.setText("6 (" + pickUp.get(6) + ")");
-               sixButton.setBackground(c);
+               if (!elevator.isStopped() || elevator.getCurrentFloor() != 6)
+               {
+                    pickUp.put(6, pickUp.get(6) + 1);
+                    sixButton.setText("6 (" + pickUp.get(6) + ")");
+                    sixButton.setBackground(c);
+               }
            }
            else if (e.getSource() == fiveButton)
            {
-               pickUp.put(5, pickUp.get(5) + 1);
-               fiveButton.setText("5 (" + pickUp.get(5) + ")");
-               fiveButton.setBackground(c);
+               if (!elevator.isStopped() || elevator.getCurrentFloor() != 5)
+               {
+                    pickUp.put(5, pickUp.get(5) + 1);
+                    fiveButton.setText("5 (" + pickUp.get(5) + ")");
+                    fiveButton.setBackground(c);
+               }
            }
            else if (e.getSource() == fourButton)
            {
-               pickUp.put(4, pickUp.get(4) + 1);
-               fourButton.setText("4 (" + pickUp.get(4) + ")");
-               fourButton.setBackground(c);
+               if (!elevator.isStopped() || elevator.getCurrentFloor() != 4)
+               {
+                    pickUp.put(4, pickUp.get(4) + 1);
+                    fourButton.setText("4 (" + pickUp.get(4) + ")");
+                    fourButton.setBackground(c);
+               }
            }
            else if (e.getSource() == threeButton)
            {
-               pickUp.put(3, pickUp.get(3) + 1);
-               threeButton.setText("3 (" + pickUp.get(3) + ")");
-               threeButton.setBackground(c);
+               if (!elevator.isStopped() || elevator.getCurrentFloor() != 3)
+               {
+                    pickUp.put(3, pickUp.get(3) + 1);
+                    threeButton.setText("3 (" + pickUp.get(3) + ")");
+                    threeButton.setBackground(c);
+               }
            }
            else if (e.getSource() == twoButton)
            {
-               pickUp.put(2, pickUp.get(2) + 1);
-               twoButton.setText("2 (" + pickUp.get(2) + ")");
-               twoButton.setBackground(c);
+               if (!elevator.isStopped() || elevator.getCurrentFloor() != 2)
+               {
+                    pickUp.put(2, pickUp.get(2) + 1);
+                    twoButton.setText("2 (" + pickUp.get(2) + ")");
+                    twoButton.setBackground(c);
+               }
            }
            else if (e.getSource() == oneButton)
            {
-               pickUp.put(1, pickUp.get(1) + 1);
-               oneButton.setText("1 (" + pickUp.get(1) + ")");
-               oneButton.setBackground(c);
+               if (!elevator.isStopped() || elevator.getCurrentFloor() != 1)
+               {
+                    pickUp.put(1, pickUp.get(1) + 1);
+                    oneButton.setText("1 (" + pickUp.get(1) + ")");
+                    oneButton.setBackground(c);
+               }
                
            }
            System.out.println(pickUp);
@@ -810,133 +825,143 @@ public class ElevatorMain extends javax.swing.JFrame
             {
                if (e.getSource() == eightButton)
                {
-                   if (pickUp.get(8) > 1)
+                   if (!elevator.isStopped() || elevator.getCurrentFloor() != 8)
                    {
-                        pickUp.put(8, pickUp.get(8) - 1);
-                        eightButton.setText("8 (" + pickUp.get(8) + ")");
-                        System.out.println(pickUp);
-                   }
-                   else
-                   {
-                        pickUp.put(8, 0);
-                        eightButton.setBackground(n);
-                        eightButton.setText("8");
-                        System.out.println(pickUp);
-                   }
+                        if (pickUp.get(8) > 1)
+                        {
+                             pickUp.put(8, pickUp.get(8) - 1);
+                             eightButton.setText("8 (" + pickUp.get(8) + ")");
+                        }
+                        else
+                        {
+                             pickUp.put(8, 0);
+                             eightButton.setBackground(n);
+                             eightButton.setText("8");
+                        }
+                    }
                }
                else if (e.getSource() == sevenButton)
                {
-                   if (pickUp.get(7) > 1)
+                   if (!elevator.isStopped() || elevator.getCurrentFloor() != 7)
                    {
-                        pickUp.put(7, pickUp.get(7) - 1);
-                        sevenButton.setText("7 (" + pickUp.get(7) + ")");
-                        System.out.println(pickUp);
-                   }
-                   else
-                   {
-                        pickUp.put(7, 0);
-                        sevenButton.setBackground(n);
-                        sevenButton.setText("7");
-                        System.out.println(pickUp);
+                        if (pickUp.get(7) > 1)
+                        {
+                             pickUp.put(7, pickUp.get(7) - 1);
+                             sevenButton.setText("7 (" + pickUp.get(7) + ")");
+                        }
+                        else
+                        {
+                             pickUp.put(7, 0);
+                             sevenButton.setBackground(n);
+                             sevenButton.setText("7");
+                        }
                    }
                }
                else if (e.getSource() == sixButton)
                {
-                   if (pickUp.get(6) > 1)
+                   if (!elevator.isStopped() || elevator.getCurrentFloor() != 6)
                    {
-                        pickUp.put(6, pickUp.get(6) - 1);
-                        sixButton.setText("6 (" + pickUp.get(6) + ")");
-                        System.out.println(pickUp);
-                   }
-                   else
-                   {
-                        pickUp.put(6, 0);
-                        sixButton.setBackground(n);
-                        sixButton.setText("6");
-                        System.out.println(pickUp);
+                        if (pickUp.get(6) > 1)
+                        {
+                             pickUp.put(6, pickUp.get(6) - 1);
+                             sixButton.setText("6 (" + pickUp.get(6) + ")");
+                        }
+                        else
+                        {
+                             pickUp.put(6, 0);
+                             sixButton.setBackground(n);
+                             sixButton.setText("6");
+                        }
                    }
                }
                else if (e.getSource() == fiveButton)
                {
-                   if (pickUp.get(5) > 1)
+                   if (!elevator.isStopped() || elevator.getCurrentFloor() != 5)
                    {
-                        pickUp.put(5, pickUp.get(5) - 1);
-                        fiveButton.setText("5 (" + pickUp.get(5) + ")");
-                        System.out.println(pickUp);
-                   }
-                   else
-                   {
-                        pickUp.put(5, 0);
-                        fiveButton.setBackground(n);
-                        fiveButton.setText("5");
-                        System.out.println(pickUp);
+                        if (pickUp.get(5) > 1)
+                        {
+                             pickUp.put(5, pickUp.get(5) - 1);
+                             fiveButton.setText("5 (" + pickUp.get(5) + ")");
+                        }
+                        else
+                        {
+                             pickUp.put(5, 0);
+                             fiveButton.setBackground(n);
+                             fiveButton.setText("5");
+                        }
                    }
                }
                else if (e.getSource() == fourButton)
                {
-                   if (pickUp.get(4) > 1)
+                   if (!elevator.isStopped() || elevator.getCurrentFloor() != 4)
                    {
-                        pickUp.put(4, pickUp.get(4) - 1);
-                        fourButton.setText("4 (" + pickUp.get(4) + ")");
-                        System.out.println(pickUp);
-                   }
-                   else
-                   {
-                        pickUp.put(4, 0);
-                        fourButton.setBackground(n);
-                        fourButton.setText("4");
-                        System.out.println(pickUp);
+                        if (pickUp.get(4) > 1)
+                        {
+                             pickUp.put(4, pickUp.get(4) - 1);
+                             fourButton.setText("4 (" + pickUp.get(4) + ")");
+                        }
+                        else
+                        {
+                             pickUp.put(4, 0);
+                             fourButton.setBackground(n);
+                             fourButton.setText("4");
+                        }
                    }
                }
                else if (e.getSource() == threeButton)
                {
-                   if (pickUp.get(3) > 1)
+                   if (!elevator.isStopped() || elevator.getCurrentFloor() != 3)
                    {
-                        pickUp.put(3, pickUp.get(3) - 1);
-                        threeButton.setText("3 (" + pickUp.get(3) + ")");
-                        System.out.println(pickUp);
-                   }
-                   else
-                   {
-                        pickUp.put(3, 0);
-                        threeButton.setBackground(n);
-                        threeButton.setText("3");
-                        System.out.println(pickUp);
+                        if (pickUp.get(3) > 1)
+                        {
+                             pickUp.put(3, pickUp.get(3) - 1);
+                             threeButton.setText("3 (" + pickUp.get(3) + ")");
+                        }
+                        else
+                        {
+                             pickUp.put(3, 0);
+                             threeButton.setBackground(n);
+                             threeButton.setText("3");
+                        }
                    }
                }
                else if (e.getSource() == twoButton)
                {
-                   if (pickUp.get(2) > 1)
+                   if (!elevator.isStopped() || elevator.getCurrentFloor() != 2)
                    {
-                        pickUp.put(2, pickUp.get(2) - 1);
-                        twoButton.setText("2 (" + pickUp.get(2) + ")");
-                        System.out.println(pickUp);
-                   }
-                   else
-                   {
-                        pickUp.put(2, 0);
-                        twoButton.setBackground(n);
-                        twoButton.setText("2");
-                        System.out.println(pickUp);
+                        if (pickUp.get(2) > 1)
+                        {
+                             pickUp.put(2, pickUp.get(2) - 1);
+                             twoButton.setText("2 (" + pickUp.get(2) + ")");
+                        }
+                        else
+                        {
+                             pickUp.put(2, 0);
+                             twoButton.setBackground(n);
+                             twoButton.setText("2");
+                        }
                    }
                }
                else if (e.getSource() == oneButton)
                {
-                   if (pickUp.get(1) > 1)
+                   if (!elevator.isStopped() || elevator.getCurrentFloor() != 1)
                    {
-                        pickUp.put(1, pickUp.get(1) - 1);
-                        oneButton.setText("1 (" + pickUp.get(1) + ")");
-                        System.out.println(pickUp);
-                   }
-                   else
-                   {
-                        pickUp.put(1, 0);
-                        oneButton.setBackground(n);
-                        oneButton.setText("1");
-                        System.out.println(pickUp);
+                        if (pickUp.get(1) > 1)
+                        {
+                             pickUp.put(1, pickUp.get(1) - 1);
+                             oneButton.setText("1 (" + pickUp.get(1) + ")");
+                        }
+                        else
+                        {
+                             pickUp.put(1, 0);
+                             oneButton.setBackground(n);
+                             oneButton.setText("1");
+                        }
                    }
                }
+               System.out.println(pickUp);
             }
+            
         }
 
         // Implement abstract methods.
