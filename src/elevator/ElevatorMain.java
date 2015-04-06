@@ -10,8 +10,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -22,6 +20,7 @@ import javax.swing.Timer;
 public class ElevatorMain extends javax.swing.JFrame
 {
     int delay, floorsAvail;
+    String floorButtonTooltip, floorComboTooltip, colourTooltip;
     Timer timer1;
     Elevator elevator; // Main elevator object.
     
@@ -40,6 +39,13 @@ public class ElevatorMain extends javax.swing.JFrame
     Color c = new Color(153,204,255);
     Color n = new Color(102,102,102);
     
+    // Colours for theme.
+    int theme = 1;
+    Color theme1 = new Color(110,147,250); //light blue
+    Color theme2 = new Color(61,88,145); //dark blue
+    Color theme3 = new Color(99,65,95); //dark purple
+    Color theme4 = new Color(82,83,84); //dark grey
+    
     /**
      * Creates new form ElevatorMain
      */
@@ -48,11 +54,26 @@ public class ElevatorMain extends javax.swing.JFrame
         initComponents();
         this.setLocationRelativeTo(null);
         
+        System.out.println("---------------------------------------------------------------------------");
+        System.out.println("Welcome to the Interactive Computer Systems Elevator Simulator.");
+        System.out.println("By Rob Bloomfield, 2015.");
+        System.out.println("---------------------------------------------------------------------------");
+        System.out.println("\nFunctionality:\n");
+        System.out.println("- Press START to start the elevator moving up and down.");
+        System.out.println("\t- While START is engaged, the elevator will move up and down indefintitely.");
+        System.out.println("- Press STOP to stop it.");
+        System.out.println("- Press any of the numbered buttons on the left hand side to add a pickup request to that floor.");
+        System.out.println("- Right click on a button that has pickup requests in the queue to remove ONE request.");
+        System.out.println("- Select the number of floors you wish to be active using the combo box.");
+        System.out.println("---------------------------------------------------------------------------");
+        
         delay = 10;
         timer1 = new Timer(delay, new TimerListener());
         
         floorsAvail = 8;
-        
+        floorButtonTooltip = "<html>Left click to add pickup request.<br> Right click to cancel a request.</html>";
+        floorComboTooltip = "<html>Choose the number of floors you wish to be active.</html>";
+        colourTooltip = "<html>Choose from six colour themes.</html>";
         
         blb  = new ButtonListenerBottom();
         blf = new ButtonListenerFloors();
@@ -90,6 +111,13 @@ public class ElevatorMain extends javax.swing.JFrame
         floors.add(fourButton); floors.add(fiveButton); floors.add(sixButton); 
         floors.add(sevenButton); floors.add(eightButton); 
         
+        for(JButton j:floors)
+        {
+            j.setToolTipText(floorButtonTooltip);
+        }
+        floorComboBox.setToolTipText(floorComboTooltip);
+        colourButton.setToolTipText(colourTooltip);
+        
         elevator = new Elevator(0,0,0,0,timer1,floors,this);
     }
 
@@ -124,8 +152,14 @@ public class ElevatorMain extends javax.swing.JFrame
         oneButton = new javax.swing.JButton();
         innerCenterPanel = new innerCenterPanel();
         innerRightPanel = new javax.swing.JPanel();
-        speedSlider = new javax.swing.JSlider();
-        jLabel2 = new javax.swing.JLabel();
+        pad8 = new javax.swing.JPanel();
+        pad7 = new javax.swing.JPanel();
+        pad6 = new javax.swing.JPanel();
+        pad5 = new javax.swing.JPanel();
+        pad4 = new javax.swing.JPanel();
+        pad3 = new javax.swing.JPanel();
+        pad2 = new javax.swing.JPanel();
+        pad1 = new javax.swing.JPanel();
         bottomPanel = new javax.swing.JPanel();
         bottomLeftPanel = new javax.swing.JPanel();
         floorComboBox = new javax.swing.JComboBox();
@@ -176,7 +210,7 @@ public class ElevatorMain extends javax.swing.JFrame
 
         topPanel.add(topLeftPanel, java.awt.BorderLayout.WEST);
 
-        topRightPanel.setBackground(new java.awt.Color(255, 255, 204));
+        topRightPanel.setBackground(new java.awt.Color(110, 147, 250));
         topRightPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         topRightPanel.setLayout(new java.awt.BorderLayout(0, 2));
 
@@ -193,7 +227,7 @@ public class ElevatorMain extends javax.swing.JFrame
 
         topRightPanel.add(upperTopRightPanel, java.awt.BorderLayout.NORTH);
 
-        statusLabel.setForeground(new java.awt.Color(102, 102, 102));
+        statusLabel.setForeground(new java.awt.Color(255, 255, 255));
         statusLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         topRightPanel.add(statusLabel, java.awt.BorderLayout.CENTER);
 
@@ -275,7 +309,7 @@ public class ElevatorMain extends javax.swing.JFrame
         innerCenterPanel.setLayout(innerCenterPanelLayout);
         innerCenterPanelLayout.setHorizontalGroup(
             innerCenterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 420, Short.MAX_VALUE)
+            .addGap(0, 445, Short.MAX_VALUE)
         );
         innerCenterPanelLayout.setVerticalGroup(
             innerCenterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -284,27 +318,130 @@ public class ElevatorMain extends javax.swing.JFrame
 
         centerPanel.add(innerCenterPanel, java.awt.BorderLayout.CENTER);
 
-        innerRightPanel.setBackground(new java.awt.Color(255, 255, 204));
-        innerRightPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        innerRightPanel.setPreferredSize(new java.awt.Dimension(80, 100));
-        innerRightPanel.setLayout(new java.awt.BorderLayout(0, 5));
+        innerRightPanel.setBackground(new java.awt.Color(110, 147, 250));
+        innerRightPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        innerRightPanel.setPreferredSize(new java.awt.Dimension(55, 100));
+        innerRightPanel.setLayout(new java.awt.GridLayout(8, 0));
 
-        speedSlider.setBackground(new java.awt.Color(51, 255, 0));
-        speedSlider.setForeground(new java.awt.Color(0, 102, 102));
-        speedSlider.setMajorTickSpacing(10);
-        speedSlider.setMinorTickSpacing(5);
-        speedSlider.setOrientation(javax.swing.JSlider.VERTICAL);
-        speedSlider.setPaintLabels(true);
-        speedSlider.setPaintTicks(true);
-        speedSlider.setSnapToTicks(true);
-        speedSlider.setValue(100);
-        speedSlider.setOpaque(false);
-        innerRightPanel.add(speedSlider, java.awt.BorderLayout.CENTER);
+        pad8.setBackground(new java.awt.Color(224, 224, 224));
 
-        jLabel2.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("Speed");
-        innerRightPanel.add(jLabel2, java.awt.BorderLayout.NORTH);
+        javax.swing.GroupLayout pad8Layout = new javax.swing.GroupLayout(pad8);
+        pad8.setLayout(pad8Layout);
+        pad8Layout.setHorizontalGroup(
+            pad8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 35, Short.MAX_VALUE)
+        );
+        pad8Layout.setVerticalGroup(
+            pad8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 38, Short.MAX_VALUE)
+        );
+
+        innerRightPanel.add(pad8);
+
+        pad7.setBackground(new java.awt.Color(215, 214, 212));
+
+        javax.swing.GroupLayout pad7Layout = new javax.swing.GroupLayout(pad7);
+        pad7.setLayout(pad7Layout);
+        pad7Layout.setHorizontalGroup(
+            pad7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 35, Short.MAX_VALUE)
+        );
+        pad7Layout.setVerticalGroup(
+            pad7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 38, Short.MAX_VALUE)
+        );
+
+        innerRightPanel.add(pad7);
+
+        pad6.setBackground(new java.awt.Color(199, 199, 199));
+
+        javax.swing.GroupLayout pad6Layout = new javax.swing.GroupLayout(pad6);
+        pad6.setLayout(pad6Layout);
+        pad6Layout.setHorizontalGroup(
+            pad6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 35, Short.MAX_VALUE)
+        );
+        pad6Layout.setVerticalGroup(
+            pad6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 38, Short.MAX_VALUE)
+        );
+
+        innerRightPanel.add(pad6);
+
+        pad5.setBackground(new java.awt.Color(191, 191, 191));
+
+        javax.swing.GroupLayout pad5Layout = new javax.swing.GroupLayout(pad5);
+        pad5.setLayout(pad5Layout);
+        pad5Layout.setHorizontalGroup(
+            pad5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 35, Short.MAX_VALUE)
+        );
+        pad5Layout.setVerticalGroup(
+            pad5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 38, Short.MAX_VALUE)
+        );
+
+        innerRightPanel.add(pad5);
+
+        pad4.setBackground(new java.awt.Color(160, 160, 160));
+
+        javax.swing.GroupLayout pad4Layout = new javax.swing.GroupLayout(pad4);
+        pad4.setLayout(pad4Layout);
+        pad4Layout.setHorizontalGroup(
+            pad4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 35, Short.MAX_VALUE)
+        );
+        pad4Layout.setVerticalGroup(
+            pad4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 38, Short.MAX_VALUE)
+        );
+
+        innerRightPanel.add(pad4);
+
+        pad3.setBackground(new java.awt.Color(140, 140, 140));
+
+        javax.swing.GroupLayout pad3Layout = new javax.swing.GroupLayout(pad3);
+        pad3.setLayout(pad3Layout);
+        pad3Layout.setHorizontalGroup(
+            pad3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 35, Short.MAX_VALUE)
+        );
+        pad3Layout.setVerticalGroup(
+            pad3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 38, Short.MAX_VALUE)
+        );
+
+        innerRightPanel.add(pad3);
+
+        pad2.setBackground(new java.awt.Color(112, 112, 112));
+
+        javax.swing.GroupLayout pad2Layout = new javax.swing.GroupLayout(pad2);
+        pad2.setLayout(pad2Layout);
+        pad2Layout.setHorizontalGroup(
+            pad2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 35, Short.MAX_VALUE)
+        );
+        pad2Layout.setVerticalGroup(
+            pad2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 38, Short.MAX_VALUE)
+        );
+
+        innerRightPanel.add(pad2);
+
+        pad1.setBackground(new java.awt.Color(102, 102, 102));
+
+        javax.swing.GroupLayout pad1Layout = new javax.swing.GroupLayout(pad1);
+        pad1.setLayout(pad1Layout);
+        pad1Layout.setHorizontalGroup(
+            pad1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 35, Short.MAX_VALUE)
+        );
+        pad1Layout.setVerticalGroup(
+            pad1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 38, Short.MAX_VALUE)
+        );
+
+        innerRightPanel.add(pad1);
 
         centerPanel.add(innerRightPanel, java.awt.BorderLayout.EAST);
 
@@ -412,13 +549,19 @@ public class ElevatorMain extends javax.swing.JFrame
     private javax.swing.JPanel innerLeftPanel;
     private javax.swing.JPanel innerRightPanel;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JButton oneButton;
+    private javax.swing.JPanel pad1;
+    private javax.swing.JPanel pad2;
+    private javax.swing.JPanel pad3;
+    private javax.swing.JPanel pad4;
+    private javax.swing.JPanel pad5;
+    private javax.swing.JPanel pad6;
+    private javax.swing.JPanel pad7;
+    private javax.swing.JPanel pad8;
     private javax.swing.JButton quitButton;
     private javax.swing.JButton sevenButton;
     private javax.swing.JButton sixButton;
-    private javax.swing.JSlider speedSlider;
     private javax.swing.JButton startButton;
     public static javax.swing.JLabel statusLabel;
     private javax.swing.JButton stopButton;
@@ -549,9 +692,38 @@ public class ElevatorMain extends javax.swing.JFrame
                 statusLabel.setText("Stopped...");
             }
             else if (e.getSource() == colourButton)
-                System.out.println("Colour Button"); // !!Add theme functionality.
+            {
+                switch(theme)
+                {
+                    case 1:
+                        innerRightPanel.setBackground(theme2);
+                        topRightPanel.setBackground(theme2);
+                        theme++;
+                        break;
+                    case 2:
+                        innerRightPanel.setBackground(theme3);
+                        topRightPanel.setBackground(theme3);
+                        theme++;
+                        break;
+                    case 3:
+                        innerRightPanel.setBackground(theme4);
+                        topRightPanel.setBackground(theme4);
+                        theme++;
+                        break;
+                    case 4:
+                        innerRightPanel.setBackground(theme1);
+                        topRightPanel.setBackground(theme1);
+                        theme = 1;
+                        break;
+                    
+                }
+                
+            }
             else
+            {
+                System.out.println("Exiting with exit code (0).");
                 System.exit(0); // Close program.
+            }
         }
         
     }
@@ -789,35 +961,27 @@ public class ElevatorMain extends javax.swing.JFrame
             switch (selection)
             {
                 case "8 Floors": 
-                    System.out.println(8);
                     floorsAvail=8;
                     break;
                 case "7 Floors":
-                    System.out.println(7);
                     floorsAvail=7;
                     break;
                 case "6 Floors":
-                    System.out.println(6);
                     floorsAvail=6;
                     break;
                 case "5 Floors":
-                    System.out.println(5);
                     floorsAvail=5;
                     break;
                 case "4 Floors":
-                    System.out.println(4);
                     floorsAvail=4;
                     break;
                 case "3 Floors":
-                    System.out.println(3);
                     floorsAvail=3;
                     break;
                 case "2 Floors":
-                    System.out.println(2);
                     floorsAvail=2;
                     break;
-                default:
-                    System.out.println("Something went wrong: defaulting to 8 floors");   
+                default:  
                     floorsAvail = 8;
             }
             
