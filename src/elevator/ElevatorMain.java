@@ -46,6 +46,9 @@ public class ElevatorMain extends javax.swing.JFrame
     Color theme3 = new Color(99,65,95); //dark purple
     Color theme4 = new Color(82,83,84); //dark grey
     
+    // Colors to represent enabled/disabled (buttons).
+    Color dis = new Color(102,102,102);
+    Color en = new Color(138,138,138);
     /**
      * Creates new form ElevatorMain
      */
@@ -67,7 +70,7 @@ public class ElevatorMain extends javax.swing.JFrame
         System.out.println("- Select the number of floors you wish to be active using the combo box.");
         System.out.println("---------------------------------------------------------------------------");
         
-        delay = 10;
+        delay = 20;
         timer1 = new Timer(delay, new TimerListener());
         
         floorsAvail = 8;
@@ -229,6 +232,7 @@ public class ElevatorMain extends javax.swing.JFrame
 
         statusLabel.setForeground(new java.awt.Color(255, 255, 255));
         statusLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        statusLabel.setText("Press START to being simulation. Press a FLOOR to request a pickup.");
         topRightPanel.add(statusLabel, java.awt.BorderLayout.CENTER);
 
         topPanel.add(topRightPanel, java.awt.BorderLayout.CENTER);
@@ -599,7 +603,12 @@ public class ElevatorMain extends javax.swing.JFrame
                 g2.drawLine(0,interval,this.getWidth(),interval);
                 interval += this.getHeight()/8;
             }
-            
+            g2.setColor(Color.LIGHT_GRAY);
+            g2.fillRect(0,
+                    0,
+                    this.getWidth(),
+                    this.getHeight()-(floorsAvail*(this.getHeight()/8))-3);
+           
             // Set up elevator.
             elevator.setLimitX((this.getHeight()));
             elevator.setHeight((this.getHeight()/8)-7);
@@ -665,10 +674,6 @@ public class ElevatorMain extends javax.swing.JFrame
     // Button Listener for bottom buttons.
     class ButtonListenerBottom implements ActionListener
     {
-        // Colors to represent enabled/disabled (buttons).
-        Color dis = new Color(102,102,102);
-        Color en = new Color(138,138,138);
-        
         @Override
         public void actionPerformed(ActionEvent e)
         {
@@ -1016,8 +1021,42 @@ public class ElevatorMain extends javax.swing.JFrame
             }
             for (int i = floorsAvail; i<floors.size(); i++)
             {
+                floors.get(i).setBackground(Color.black);
                 floors.get(i).setEnabled(false);
+                
             }
+            
+            //Stop timer and reset simulation.
+            //Resets the elevator to the bottom floor.
+            //Enables/disables the correct buttons.
+            //Resets the pickup counters and button labels.
+            timer1.stop();
+            elevator.stopT2();
+            elevator.setY((innerCenterPanel.getHeight())-elevator.getHeight()-5);
+            stopButton.setEnabled(false);
+            stopButton.setBackground(dis);
+            startButton.setEnabled(true);
+            startButton.setBackground(en);
+            elevator.pushStop();
+            elevator.stop();
+            
+            // Resets the pickup counters.
+            for (int i = 1; i<=pickUp.size();i++)
+            {
+                pickUp.put(i, 0);
+            }
+            
+            // Resets the button labels (pickup).
+            int j = 1;
+            for (JButton b: floors)
+            {
+                b.setText(""+j);
+                b.setBackground(n);
+                j++;
+            }
+            
+            statusLabel.setText("Standing by...");
+            repaint();
         } 
     }
 }

@@ -8,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.JButton;
-import javax.swing.JPanel;
 import javax.swing.Timer;
 
 public class Elevator
@@ -108,6 +107,13 @@ public class Elevator
     public int getDirection()
     {
         return this.direction;
+    }
+    
+    public void stopT2()
+    {
+        t2.stop();
+        wait = 0;
+        
     }
     
     // Sets the upper bound of the simulation panel.
@@ -287,6 +293,11 @@ public class Elevator
     {
         pushStop = false;
         return pushStop;
+    }
+    
+    public void stop()
+    {
+        stop = false;
     }
     
     // Sets up individual floor boundaries relative to the current size of the panel.
