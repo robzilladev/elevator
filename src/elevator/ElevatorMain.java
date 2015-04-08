@@ -97,8 +97,6 @@ public class ElevatorMain extends javax.swing.JFrame
         sevenButton.addActionListener(blf); sevenButton.addMouseListener(mcl);
         eightButton.addActionListener(blf); eightButton.addMouseListener(mcl);
         
-        
-        
         floorComboBox.addActionListener(cl);
         
         // Set up button/click count mapping.
@@ -120,7 +118,7 @@ public class ElevatorMain extends javax.swing.JFrame
         }
         floorComboBox.setToolTipText(floorComboTooltip);
         colourButton.setToolTipText(colourTooltip);
-        
+        stopButton.setEnabled(false);
         elevator = new Elevator(0,0,0,0,timer1,floors,this);
     }
 
@@ -456,13 +454,14 @@ public class ElevatorMain extends javax.swing.JFrame
         bottomPanel.setLayout(new java.awt.BorderLayout());
 
         bottomLeftPanel.setBackground(new java.awt.Color(153, 153, 153));
+        bottomLeftPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
         bottomLeftPanel.setPreferredSize(new java.awt.Dimension(100, 100));
-        bottomLeftPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        bottomLeftPanel.setLayout(new java.awt.GridLayout(1, 1));
 
         floorComboBox.setBackground(new java.awt.Color(242, 242, 242));
         floorComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "8 Floors", "7 Floors", "6 Floors", "5 Floors", "4 Floors", "3 Floors", "2 Floors" }));
         floorComboBox.setPreferredSize(new java.awt.Dimension(20, 20));
-        bottomLeftPanel.add(floorComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 80, 30));
+        bottomLeftPanel.add(floorComboBox);
 
         bottomPanel.add(bottomLeftPanel, java.awt.BorderLayout.WEST);
 
@@ -603,6 +602,8 @@ public class ElevatorMain extends javax.swing.JFrame
                 g2.drawLine(0,interval,this.getWidth(),interval);
                 interval += this.getHeight()/8;
             }
+            
+            // Blank out the inactive floors areas.
             g2.setColor(Color.LIGHT_GRAY);
             g2.fillRect(0,
                     0,
