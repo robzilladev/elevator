@@ -608,7 +608,7 @@ public class ElevatorMain extends javax.swing.JFrame
             g2.fillRect(0,
                     0,
                     this.getWidth(),
-                    this.getHeight()-(floorsAvail*(this.getHeight()/8))-3);
+                    this.getHeight()-(floorsAvail*(this.getHeight()/8))-4);
            
             // Set up elevator.
             elevator.setLimitX((this.getHeight()));
