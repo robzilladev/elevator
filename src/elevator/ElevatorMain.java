@@ -6,25 +6,35 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.swing.event.ChangeListener;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import javax.swing.event.ChangeEvent;
 
 public class ElevatorMain extends javax.swing.JFrame
 {
     int delay, floorsAvail;
     String floorButtonTooltip, floorComboTooltip, colourTooltip;
+    boolean goToClicked = false;
     Timer timer1;
     Elevator elevator; // Main elevator object.
     
+    GoToBottomPanel goToBottomPanel = new GoToBottomPanel();
+    
     HashMap<Integer, Integer> pickUp; // Maps number of button clicks to the appropriate floors.
+    HashMap<Integer, Integer> dropOff; // Maps number of people to be dropped off at each floor.
+    HashMap<Integer, Integer> speed;
     ArrayList<JButton> floors; // List of buttons for easy access later.
     
     ImageIcon logo = new javax.swing.ImageIcon(getClass().getResource("/elevator/logo.png"));
@@ -34,6 +44,8 @@ public class ElevatorMain extends javax.swing.JFrame
     ButtonListenerFloors blf;
     MouseClickListener mcl;
     ComboListener cl;
+    GoToButtonListener gtl;
+    HoverListener hl;
     
     // Colours for floor buttons (clicked/non-clicked)
     Color c = new Color(153,204,255);
@@ -82,6 +94,8 @@ public class ElevatorMain extends javax.swing.JFrame
         blf = new ButtonListenerFloors();
         mcl = new MouseClickListener();
         cl = new ComboListener();
+        gtl = new GoToButtonListener();
+        hl = new HoverListener();
                 
         startButton.addActionListener(blb);
         stopButton.addActionListener(blb);
@@ -98,16 +112,28 @@ public class ElevatorMain extends javax.swing.JFrame
         eightButton.addActionListener(blf); eightButton.addMouseListener(mcl);
         
         floorComboBox.addActionListener(cl);
+        slider.addChangeListener(new SliderListener());
         
         // Set up button/click count mapping.
-        pickUp = new HashMap<Integer, Integer>();
+        pickUp = new HashMap<>();
         for (int i = 1; i<9; i++)
         {
             pickUp.put(i, 0);
         }
         
+        // Set up goto button/click count mapping.
+        dropOff = new HashMap<>();
+        for (int i = 1; i<9; i++)
+        {
+            dropOff.put(i, 0);
+        }
+        
+        speed = new HashMap<>();
+        speed.put(1, 49);speed.put(2, 42);speed.put(3, 35);speed.put(4, 28);speed.put(5, 21);
+        speed.put(6, 14);speed.put(7, 7);speed.put(8, 0);
+        
         // Add all buttons to list for easy access later.
-        floors = new ArrayList<JButton>();
+        floors = new ArrayList<>();
         floors.add(oneButton); floors.add(twoButton); floors.add(threeButton); 
         floors.add(fourButton); floors.add(fiveButton); floors.add(sixButton); 
         floors.add(sevenButton); floors.add(eightButton); 
@@ -115,11 +141,19 @@ public class ElevatorMain extends javax.swing.JFrame
         for(JButton j:floors)
         {
             j.setToolTipText(floorButtonTooltip);
+            j.addMouseListener(hl);
         }
         floorComboBox.setToolTipText(floorComboTooltip);
         colourButton.setToolTipText(colourTooltip);
         stopButton.setEnabled(false);
         elevator = new Elevator(0,0,0,0,timer1,floors,this);
+        
+        // Go to frame stuff
+        goToFrame.pack();
+        goToFrame.addFocusListener(new GoToFocusListener());
+        goToCancel.addActionListener(gtl); goTo8.addActionListener(gtl);goTo7.addActionListener(gtl);
+        goTo6.addActionListener(gtl);goTo5.addActionListener(gtl);goTo4.addActionListener(gtl);
+        goTo3.addActionListener(gtl);goTo2.addActionListener(gtl);goTo1.addActionListener(gtl);
     }
 
     /**
@@ -132,6 +166,19 @@ public class ElevatorMain extends javax.swing.JFrame
     private void initComponents()
     {
 
+        goToFrame = new javax.swing.JFrame();
+        goToTopPanel = new javax.swing.JPanel();
+        goToLabel = new javax.swing.JLabel();
+        javax.swing.JPanel goToBottomPanel = new GoToBottomPanel();
+        goTo1 = new javax.swing.JButton();
+        goTo2 = new javax.swing.JButton();
+        goTo3 = new javax.swing.JButton();
+        goTo4 = new javax.swing.JButton();
+        goTo5 = new javax.swing.JButton();
+        goTo6 = new javax.swing.JButton();
+        goTo7 = new javax.swing.JButton();
+        goTo8 = new javax.swing.JButton();
+        goToCancel = new javax.swing.JButton();
         mainPanel = new javax.swing.JPanel();
         topPanel = new javax.swing.JPanel();
         topLeftPanel = new logoPanel();
@@ -153,14 +200,8 @@ public class ElevatorMain extends javax.swing.JFrame
         oneButton = new javax.swing.JButton();
         innerCenterPanel = new innerCenterPanel();
         innerRightPanel = new javax.swing.JPanel();
-        pad8 = new javax.swing.JPanel();
-        pad7 = new javax.swing.JPanel();
-        pad6 = new javax.swing.JPanel();
-        pad5 = new javax.swing.JPanel();
-        pad4 = new javax.swing.JPanel();
-        pad3 = new javax.swing.JPanel();
-        pad2 = new javax.swing.JPanel();
-        pad1 = new javax.swing.JPanel();
+        slider = new javax.swing.JSlider();
+        sliderLabel = new javax.swing.JLabel();
         bottomPanel = new javax.swing.JPanel();
         bottomLeftPanel = new javax.swing.JPanel();
         floorComboBox = new javax.swing.JComboBox();
@@ -170,6 +211,92 @@ public class ElevatorMain extends javax.swing.JFrame
         bottomRightPanel = new javax.swing.JPanel();
         colourButton = new javax.swing.JButton();
         quitButton = new javax.swing.JButton();
+
+        goToFrame.setMaximumSize(null);
+        goToFrame.setUndecorated(true);
+
+        goToTopPanel.setBackground(new java.awt.Color(51, 51, 51));
+        goToTopPanel.setPreferredSize(new java.awt.Dimension(2, 50));
+        goToTopPanel.setLayout(new java.awt.BorderLayout());
+
+        goToLabel.setBackground(new java.awt.Color(51, 51, 51));
+        goToLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        goToLabel.setForeground(new java.awt.Color(255, 255, 255));
+        goToLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        goToLabel.setText("Destination Floor:");
+        goToTopPanel.add(goToLabel, java.awt.BorderLayout.CENTER);
+
+        goToFrame.getContentPane().add(goToTopPanel, java.awt.BorderLayout.NORTH);
+
+        goToBottomPanel.setBackground(new java.awt.Color(102, 102, 102));
+        goToBottomPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        goToBottomPanel.setPreferredSize(new java.awt.Dimension(300, 200));
+        goToBottomPanel.setLayout(new java.awt.GridLayout(3, 3, 5, 5));
+
+        goTo1.setBackground(new java.awt.Color(51, 51, 51));
+        goTo1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        goTo1.setForeground(new java.awt.Color(102, 255, 255));
+        goTo1.setText("1");
+        goTo1.setBorderPainted(false);
+        goToBottomPanel.add(goTo1);
+
+        goTo2.setBackground(new java.awt.Color(51, 51, 51));
+        goTo2.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        goTo2.setForeground(new java.awt.Color(102, 255, 255));
+        goTo2.setText("2");
+        goTo2.setBorderPainted(false);
+        goToBottomPanel.add(goTo2);
+
+        goTo3.setBackground(new java.awt.Color(51, 51, 51));
+        goTo3.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        goTo3.setForeground(new java.awt.Color(102, 255, 255));
+        goTo3.setText("3");
+        goTo3.setBorderPainted(false);
+        goToBottomPanel.add(goTo3);
+
+        goTo4.setBackground(new java.awt.Color(51, 51, 51));
+        goTo4.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        goTo4.setForeground(new java.awt.Color(102, 255, 255));
+        goTo4.setText("4");
+        goTo4.setBorderPainted(false);
+        goToBottomPanel.add(goTo4);
+
+        goTo5.setBackground(new java.awt.Color(51, 51, 51));
+        goTo5.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        goTo5.setForeground(new java.awt.Color(102, 255, 255));
+        goTo5.setText("5");
+        goTo5.setBorderPainted(false);
+        goToBottomPanel.add(goTo5);
+
+        goTo6.setBackground(new java.awt.Color(51, 51, 51));
+        goTo6.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        goTo6.setForeground(new java.awt.Color(102, 255, 255));
+        goTo6.setText("6");
+        goTo6.setBorderPainted(false);
+        goToBottomPanel.add(goTo6);
+
+        goTo7.setBackground(new java.awt.Color(51, 51, 51));
+        goTo7.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        goTo7.setForeground(new java.awt.Color(102, 255, 255));
+        goTo7.setText("7");
+        goTo7.setBorderPainted(false);
+        goToBottomPanel.add(goTo7);
+
+        goTo8.setBackground(new java.awt.Color(51, 51, 51));
+        goTo8.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        goTo8.setForeground(new java.awt.Color(102, 255, 255));
+        goTo8.setText("8");
+        goTo8.setBorderPainted(false);
+        goToBottomPanel.add(goTo8);
+
+        goToCancel.setBackground(new java.awt.Color(51, 51, 51));
+        goToCancel.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        goToCancel.setForeground(new java.awt.Color(255, 51, 51));
+        goToCancel.setText("Cancel");
+        goToCancel.setBorderPainted(false);
+        goToBottomPanel.add(goToCancel);
+
+        goToFrame.getContentPane().add(goToBottomPanel, java.awt.BorderLayout.CENTER);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addComponentListener(new java.awt.event.ComponentAdapter()
@@ -230,7 +357,7 @@ public class ElevatorMain extends javax.swing.JFrame
 
         statusLabel.setForeground(new java.awt.Color(255, 255, 255));
         statusLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        statusLabel.setText("Press START to being simulation. Press a FLOOR to request a pickup.");
+        statusLabel.setText("Press START to begin simulation. Press a FLOOR to request a pickup.");
         topRightPanel.add(statusLabel, java.awt.BorderLayout.CENTER);
 
         topPanel.add(topRightPanel, java.awt.BorderLayout.CENTER);
@@ -311,7 +438,7 @@ public class ElevatorMain extends javax.swing.JFrame
         innerCenterPanel.setLayout(innerCenterPanelLayout);
         innerCenterPanelLayout.setHorizontalGroup(
             innerCenterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 445, Short.MAX_VALUE)
+            .addGap(0, 430, Short.MAX_VALUE)
         );
         innerCenterPanelLayout.setVerticalGroup(
             innerCenterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -322,128 +449,27 @@ public class ElevatorMain extends javax.swing.JFrame
 
         innerRightPanel.setBackground(new java.awt.Color(110, 147, 250));
         innerRightPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        innerRightPanel.setPreferredSize(new java.awt.Dimension(55, 100));
-        innerRightPanel.setLayout(new java.awt.GridLayout(8, 0));
+        innerRightPanel.setPreferredSize(new java.awt.Dimension(70, 100));
+        innerRightPanel.setLayout(new java.awt.BorderLayout());
 
-        pad8.setBackground(new java.awt.Color(224, 224, 224));
+        slider.setBackground(new java.awt.Color(102, 102, 102));
+        slider.setForeground(new java.awt.Color(255, 255, 255));
+        slider.setMajorTickSpacing(1);
+        slider.setMaximum(8);
+        slider.setMinimum(1);
+        slider.setOrientation(javax.swing.JSlider.VERTICAL);
+        slider.setPaintLabels(true);
+        slider.setPaintTicks(true);
+        slider.setSnapToTicks(true);
+        slider.setValue(5);
+        slider.setOpaque(false);
+        innerRightPanel.add(slider, java.awt.BorderLayout.CENTER);
 
-        javax.swing.GroupLayout pad8Layout = new javax.swing.GroupLayout(pad8);
-        pad8.setLayout(pad8Layout);
-        pad8Layout.setHorizontalGroup(
-            pad8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 35, Short.MAX_VALUE)
-        );
-        pad8Layout.setVerticalGroup(
-            pad8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 38, Short.MAX_VALUE)
-        );
-
-        innerRightPanel.add(pad8);
-
-        pad7.setBackground(new java.awt.Color(215, 214, 212));
-
-        javax.swing.GroupLayout pad7Layout = new javax.swing.GroupLayout(pad7);
-        pad7.setLayout(pad7Layout);
-        pad7Layout.setHorizontalGroup(
-            pad7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 35, Short.MAX_VALUE)
-        );
-        pad7Layout.setVerticalGroup(
-            pad7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 38, Short.MAX_VALUE)
-        );
-
-        innerRightPanel.add(pad7);
-
-        pad6.setBackground(new java.awt.Color(199, 199, 199));
-
-        javax.swing.GroupLayout pad6Layout = new javax.swing.GroupLayout(pad6);
-        pad6.setLayout(pad6Layout);
-        pad6Layout.setHorizontalGroup(
-            pad6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 35, Short.MAX_VALUE)
-        );
-        pad6Layout.setVerticalGroup(
-            pad6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 38, Short.MAX_VALUE)
-        );
-
-        innerRightPanel.add(pad6);
-
-        pad5.setBackground(new java.awt.Color(191, 191, 191));
-
-        javax.swing.GroupLayout pad5Layout = new javax.swing.GroupLayout(pad5);
-        pad5.setLayout(pad5Layout);
-        pad5Layout.setHorizontalGroup(
-            pad5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 35, Short.MAX_VALUE)
-        );
-        pad5Layout.setVerticalGroup(
-            pad5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 38, Short.MAX_VALUE)
-        );
-
-        innerRightPanel.add(pad5);
-
-        pad4.setBackground(new java.awt.Color(160, 160, 160));
-
-        javax.swing.GroupLayout pad4Layout = new javax.swing.GroupLayout(pad4);
-        pad4.setLayout(pad4Layout);
-        pad4Layout.setHorizontalGroup(
-            pad4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 35, Short.MAX_VALUE)
-        );
-        pad4Layout.setVerticalGroup(
-            pad4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 38, Short.MAX_VALUE)
-        );
-
-        innerRightPanel.add(pad4);
-
-        pad3.setBackground(new java.awt.Color(140, 140, 140));
-
-        javax.swing.GroupLayout pad3Layout = new javax.swing.GroupLayout(pad3);
-        pad3.setLayout(pad3Layout);
-        pad3Layout.setHorizontalGroup(
-            pad3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 35, Short.MAX_VALUE)
-        );
-        pad3Layout.setVerticalGroup(
-            pad3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 38, Short.MAX_VALUE)
-        );
-
-        innerRightPanel.add(pad3);
-
-        pad2.setBackground(new java.awt.Color(112, 112, 112));
-
-        javax.swing.GroupLayout pad2Layout = new javax.swing.GroupLayout(pad2);
-        pad2.setLayout(pad2Layout);
-        pad2Layout.setHorizontalGroup(
-            pad2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 35, Short.MAX_VALUE)
-        );
-        pad2Layout.setVerticalGroup(
-            pad2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 38, Short.MAX_VALUE)
-        );
-
-        innerRightPanel.add(pad2);
-
-        pad1.setBackground(new java.awt.Color(102, 102, 102));
-
-        javax.swing.GroupLayout pad1Layout = new javax.swing.GroupLayout(pad1);
-        pad1.setLayout(pad1Layout);
-        pad1Layout.setHorizontalGroup(
-            pad1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 35, Short.MAX_VALUE)
-        );
-        pad1Layout.setVerticalGroup(
-            pad1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 38, Short.MAX_VALUE)
-        );
-
-        innerRightPanel.add(pad1);
+        sliderLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        sliderLabel.setForeground(new java.awt.Color(255, 255, 255));
+        sliderLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        sliderLabel.setText("Speed");
+        innerRightPanel.add(sliderLabel, java.awt.BorderLayout.NORTH);
 
         centerPanel.add(innerRightPanel, java.awt.BorderLayout.EAST);
 
@@ -548,23 +574,29 @@ public class ElevatorMain extends javax.swing.JFrame
     private javax.swing.JLabel floorHead;
     static javax.swing.JLabel floorLabel;
     private javax.swing.JButton fourButton;
+    private javax.swing.JButton goTo1;
+    private javax.swing.JButton goTo2;
+    private javax.swing.JButton goTo3;
+    private javax.swing.JButton goTo4;
+    private javax.swing.JButton goTo5;
+    private javax.swing.JButton goTo6;
+    private javax.swing.JButton goTo7;
+    private javax.swing.JButton goTo8;
+    private javax.swing.JButton goToCancel;
+    private javax.swing.JFrame goToFrame;
+    private javax.swing.JLabel goToLabel;
+    private javax.swing.JPanel goToTopPanel;
     private javax.swing.JPanel innerCenterPanel;
     private javax.swing.JPanel innerLeftPanel;
     private javax.swing.JPanel innerRightPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JButton oneButton;
-    private javax.swing.JPanel pad1;
-    private javax.swing.JPanel pad2;
-    private javax.swing.JPanel pad3;
-    private javax.swing.JPanel pad4;
-    private javax.swing.JPanel pad5;
-    private javax.swing.JPanel pad6;
-    private javax.swing.JPanel pad7;
-    private javax.swing.JPanel pad8;
     private javax.swing.JButton quitButton;
     private javax.swing.JButton sevenButton;
     private javax.swing.JButton sixButton;
+    private javax.swing.JSlider slider;
+    private javax.swing.JLabel sliderLabel;
     private javax.swing.JButton startButton;
     public static javax.swing.JLabel statusLabel;
     private javax.swing.JButton stopButton;
@@ -737,6 +769,14 @@ public class ElevatorMain extends javax.swing.JFrame
     // Button Listener for floor buttons.
     class ButtonListenerFloors implements ActionListener
     {
+        public void popUpFrame()
+        {
+            goToFrame.setVisible(true);
+            goToFrame.setLocationRelativeTo(null);
+            goToFrame.setEnabled(true);
+            goToClicked = true;
+        }
+        
         @Override
         public void actionPerformed(ActionEvent e)
         {
@@ -744,76 +784,61 @@ public class ElevatorMain extends javax.swing.JFrame
            {
                if (!elevator.isStopped() || elevator.getCurrentFloor() != 8)
                {
-                   pickUp.put(8, pickUp.get(8) + 1);
-                   eightButton.setBackground(c);
-                   eightButton.setText("8 (" + pickUp.get(8) + ")");
+                   // Open the destination floor pop up panel (new frame).
+                   popUpFrame();
                }
            }
            else if (e.getSource() == sevenButton)
            {
                if (!elevator.isStopped() || elevator.getCurrentFloor() != 7)
                {
-                   pickUp.put(7, pickUp.get(7) + 1);
-                   sevenButton.setText("7 (" + pickUp.get(7) + ")");
-                   sevenButton.setBackground(c);
+                   popUpFrame();
                }
            }
            else if (e.getSource() == sixButton)
            {
                if (!elevator.isStopped() || elevator.getCurrentFloor() != 6)
                {
-                    pickUp.put(6, pickUp.get(6) + 1);
-                    sixButton.setText("6 (" + pickUp.get(6) + ")");
-                    sixButton.setBackground(c);
+                    popUpFrame();
                }
            }
            else if (e.getSource() == fiveButton)
            {
                if (!elevator.isStopped() || elevator.getCurrentFloor() != 5)
                {
-                    pickUp.put(5, pickUp.get(5) + 1);
-                    fiveButton.setText("5 (" + pickUp.get(5) + ")");
-                    fiveButton.setBackground(c);
+                    popUpFrame();
                }
            }
            else if (e.getSource() == fourButton)
            {
                if (!elevator.isStopped() || elevator.getCurrentFloor() != 4)
                {
-                    pickUp.put(4, pickUp.get(4) + 1);
-                    fourButton.setText("4 (" + pickUp.get(4) + ")");
-                    fourButton.setBackground(c);
+                    popUpFrame();
                }
            }
            else if (e.getSource() == threeButton)
            {
                if (!elevator.isStopped() || elevator.getCurrentFloor() != 3)
                {
-                    pickUp.put(3, pickUp.get(3) + 1);
-                    threeButton.setText("3 (" + pickUp.get(3) + ")");
-                    threeButton.setBackground(c);
+                    popUpFrame();
                }
            }
            else if (e.getSource() == twoButton)
            {
                if (!elevator.isStopped() || elevator.getCurrentFloor() != 2)
                {
-                    pickUp.put(2, pickUp.get(2) + 1);
-                    twoButton.setText("2 (" + pickUp.get(2) + ")");
-                    twoButton.setBackground(c);
+                    popUpFrame();
                }
            }
            else if (e.getSource() == oneButton)
            {
                if (!elevator.isStopped() || elevator.getCurrentFloor() != 1)
                {
-                    pickUp.put(1, pickUp.get(1) + 1);
-                    oneButton.setText("1 (" + pickUp.get(1) + ")");
-                    oneButton.setBackground(c);
+                    popUpFrame();
                }
                
            }
-           System.out.println(pickUp);
+           System.out.println("Pickup: " + pickUp);
         }
     }
     
@@ -965,7 +990,7 @@ public class ElevatorMain extends javax.swing.JFrame
                         }
                    }
                }
-               System.out.println(pickUp);
+               System.out.println("Pickup: " + pickUp);
             }
             
         }
@@ -1059,5 +1084,180 @@ public class ElevatorMain extends javax.swing.JFrame
             statusLabel.setText("Standing by...");
             repaint();
         } 
+    }
+    
+    class SliderListener implements ChangeListener
+    {
+        @Override
+        public void stateChanged(ChangeEvent e)
+        {
+            JSlider source = (JSlider)e.getSource();
+            if (!source.getValueIsAdjusting()) 
+            {
+               delay = speed.get(source.getValue());
+               timer1.setDelay(delay);
+               System.out.println(delay);
+            }   
+        }
+    }
+    
+    class GoToButtonListener implements ActionListener
+    {
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            JButton j = (JButton)e.getSource();
+            if (j == goToCancel)
+            {
+                goToFrame.setVisible(false);
+            }
+            else if (j == goTo8)
+            {
+                dropOff.put(8, dropOff.get(8)+1);
+                System.out.println("Drop off: " + dropOff);
+                
+                pickUp.put(8, pickUp.get(8) + 1);
+                eightButton.setBackground(c);
+                eightButton.setText("8 (" + pickUp.get(8) + ")");
+            
+            }
+            else if (j == goTo7)
+            {
+                dropOff.put(7, dropOff.get(7)+1);
+                System.out.println("Drop off: " + dropOff);
+                
+                pickUp.put(7, pickUp.get(7) + 1);
+                sevenButton.setText("7 (" + pickUp.get(7) + ")");
+                sevenButton.setBackground(c);
+            }
+            else if (j == goTo6)
+            {
+                dropOff.put(6, dropOff.get(6)+1);
+                System.out.println("Drop off: " + dropOff);
+                
+                pickUp.put(6, pickUp.get(6) + 1);
+                sixButton.setText("6 (" + pickUp.get(6) + ")");
+                sixButton.setBackground(c);
+            }
+            else if (j == goTo5)
+            {
+                dropOff.put(5, dropOff.get(5)+1);
+                System.out.println("Drop off: " + dropOff);
+                
+                pickUp.put(5, pickUp.get(5) + 1);
+                fiveButton.setText("5 (" + pickUp.get(5) + ")");
+                fiveButton.setBackground(c);
+            }
+            else if (j == goTo4)
+            {
+                dropOff.put(4, dropOff.get(4)+1);
+                System.out.println("Drop off: " + dropOff);
+                
+                pickUp.put(4, pickUp.get(4) + 1);
+                fourButton.setText("4 (" + pickUp.get(4) + ")");
+                fourButton.setBackground(c);
+            }
+            else if (j == goTo3)
+            {
+                dropOff.put(3, dropOff.get(3)+1);
+                System.out.println("Drop off: " + dropOff);
+                
+                pickUp.put(3, pickUp.get(3) + 1);
+                threeButton.setText("3 (" + pickUp.get(3) + ")");
+                threeButton.setBackground(c);
+            }
+            else if (j == goTo2)
+            {
+                dropOff.put(2, dropOff.get(2)+1);
+                System.out.println("Drop off: " + dropOff);
+                
+                pickUp.put(2, pickUp.get(2) + 1);
+                twoButton.setText("2 (" + pickUp.get(2) + ")");
+                twoButton.setBackground(c);
+            }
+            else if (j == goTo1)
+            {
+                dropOff.put(1, dropOff.get(1)+1);
+                System.out.println("Drop off: " + dropOff);
+                
+                pickUp.put(1, pickUp.get(1) + 1);
+                oneButton.setText("1 (" + pickUp.get(1) + ")");
+                oneButton.setBackground(c);
+            }
+            
+            goToFrame.setVisible(false);
+            goToClicked = false;
+            goToFrame.setEnabled(true);
+        }
+        
+    }
+    
+    class HoverListener implements MouseListener
+    {
+        int hoverDelay = 1000;
+        boolean done = false;
+        Timer hoverTimer = new Timer(hoverDelay,new ActionListener() {                
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (done == false && !goToClicked)
+                {
+                    goToFrame.setLocationRelativeTo(null);
+                    goToFrame.setEnabled(false);
+                    goToFrame.setVisible(true);
+                    done = true;
+                }
+                hoverTimer.stop();
+                                    
+            }
+        });
+        
+        @Override public void mouseEntered(MouseEvent e)
+        {
+            if (!goToClicked)
+                hoverTimer.start();
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e)
+        {
+            if (!goToClicked)
+            {
+                goToFrame.setVisible(false);
+                goToFrame.setEnabled(true);
+                hoverTimer.stop();
+                done = false;
+            }
+        }
+        
+        @Override public void mouseClicked(MouseEvent e){}
+        @Override public void mousePressed(MouseEvent e){}
+        @Override public void mouseReleased(MouseEvent e){}
+    }
+    
+    class GoToFocusListener implements FocusListener
+    {
+        @Override
+        public void focusLost(FocusEvent e)
+        {
+            goToFrame.setEnabled(false);
+            goToFrame.setVisible(false);
+        }
+        
+        @Override public void focusGained(FocusEvent e){}
+    }
+    
+    class GoToBottomPanel extends JPanel
+    {
+        boolean dropOffAdded = false;
+        
+        public boolean dropOffAdded()
+        {
+            return dropOffAdded;
+        }
+        
+        public void setDropOff(boolean b)
+        {
+            dropOffAdded = b;
+        }
     }
 }
