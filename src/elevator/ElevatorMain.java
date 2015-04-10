@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -36,19 +37,20 @@ public class ElevatorMain extends javax.swing.JFrame
     HashMap<Integer, Integer> dropOff; // Maps number of people to be dropped off at each floor.
     HashMap<Integer, Integer> speed;
     ArrayList<JButton> floors; // List of buttons for easy access later.
+    ArrayList<JButton> goToFloors;
     
     ImageIcon logo = new javax.swing.ImageIcon(getClass().getResource("/elevator/logo.png"));
     
     // Listeners
     ButtonListenerBottom blb;
     ButtonListenerFloors blf;
-    MouseClickListener mcl;
+//    MouseClickListener mcl;
     ComboListener cl;
     GoToButtonListener gtl;
     HoverListener hl;
     
     // Colours for floor buttons (clicked/non-clicked)
-    Color c = new Color(153,204,255);
+    Color c = new Color(61,101,128);
     Color n = new Color(102,102,102);
     
     // Colours for theme.
@@ -86,13 +88,12 @@ public class ElevatorMain extends javax.swing.JFrame
         timer1 = new Timer(delay, new TimerListener());
         
         floorsAvail = 8;
-        floorButtonTooltip = "<html>Left click to add pickup request.<br> Right click to cancel a request.</html>";
         floorComboTooltip = "<html>Choose the number of floors you wish to be active.</html>";
         colourTooltip = "<html>Choose from six colour themes.</html>";
         
         blb  = new ButtonListenerBottom();
         blf = new ButtonListenerFloors();
-        mcl = new MouseClickListener();
+//        mcl = new MouseClickListener();
         cl = new ComboListener();
         gtl = new GoToButtonListener();
         hl = new HoverListener();
@@ -102,14 +103,14 @@ public class ElevatorMain extends javax.swing.JFrame
         colourButton.addActionListener(blb);
         quitButton.addActionListener(blb);
         
-        oneButton.addActionListener(blf); oneButton.addMouseListener(mcl);
-        twoButton.addActionListener(blf); twoButton.addMouseListener(mcl);
-        threeButton.addActionListener(blf); threeButton.addMouseListener(mcl);
-        fourButton.addActionListener(blf); fourButton.addMouseListener(mcl);
-        fiveButton.addActionListener(blf); fiveButton.addMouseListener(mcl);
-        sixButton.addActionListener(blf); sixButton.addMouseListener(mcl);
-        sevenButton.addActionListener(blf); sevenButton.addMouseListener(mcl);
-        eightButton.addActionListener(blf); eightButton.addMouseListener(mcl);
+        oneButton.addActionListener(blf); //oneButton.addMouseListener(mcl);
+        twoButton.addActionListener(blf); //twoButton.addMouseListener(mcl);
+        threeButton.addActionListener(blf); //threeButton.addMouseListener(mcl);
+        fourButton.addActionListener(blf); //fourButton.addMouseListener(mcl);
+        fiveButton.addActionListener(blf); //fiveButton.addMouseListener(mcl);
+        sixButton.addActionListener(blf); //sixButton.addMouseListener(mcl);
+        sevenButton.addActionListener(blf); //sevenButton.addMouseListener(mcl);
+        eightButton.addActionListener(blf); //eightButton.addMouseListener(mcl);
         
         floorComboBox.addActionListener(cl);
         slider.addChangeListener(new SliderListener());
@@ -145,8 +146,10 @@ public class ElevatorMain extends javax.swing.JFrame
         }
         floorComboBox.setToolTipText(floorComboTooltip);
         colourButton.setToolTipText(colourTooltip);
+        
+        
         stopButton.setEnabled(false);
-        elevator = new Elevator(0,0,0,0,timer1,floors,this);
+        stopButton.setBackground(dis);
         
         // Go to frame stuff
         goToFrame.pack();
@@ -154,6 +157,13 @@ public class ElevatorMain extends javax.swing.JFrame
         goToCancel.addActionListener(gtl); goTo8.addActionListener(gtl);goTo7.addActionListener(gtl);
         goTo6.addActionListener(gtl);goTo5.addActionListener(gtl);goTo4.addActionListener(gtl);
         goTo3.addActionListener(gtl);goTo2.addActionListener(gtl);goTo1.addActionListener(gtl);
+        
+        goToFloors = new ArrayList<>();
+        goToFloors.add(goTo1);goToFloors.add(goTo2);goToFloors.add(goTo3);goToFloors.add(goTo4);
+        goToFloors.add(goTo5);goToFloors.add(goTo6);goToFloors.add(goTo7);goToFloors.add(goTo8);
+        
+        // !!!Must be initialised LAST!!!
+        elevator = new Elevator(0,0,0,0,timer1,floors,this,goToFloors);
     }
 
     /**
@@ -230,7 +240,7 @@ public class ElevatorMain extends javax.swing.JFrame
 
         goToBottomPanel.setBackground(new java.awt.Color(102, 102, 102));
         goToBottomPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        goToBottomPanel.setPreferredSize(new java.awt.Dimension(300, 200));
+        goToBottomPanel.setPreferredSize(new java.awt.Dimension(220, 200));
         goToBottomPanel.setLayout(new java.awt.GridLayout(3, 3, 5, 5));
 
         goTo1.setBackground(new java.awt.Color(51, 51, 51));
@@ -238,6 +248,7 @@ public class ElevatorMain extends javax.swing.JFrame
         goTo1.setForeground(new java.awt.Color(102, 255, 255));
         goTo1.setText("1");
         goTo1.setBorderPainted(false);
+        goTo1.setMargin(new java.awt.Insets(1, 1, 1, 1));
         goToBottomPanel.add(goTo1);
 
         goTo2.setBackground(new java.awt.Color(51, 51, 51));
@@ -245,6 +256,7 @@ public class ElevatorMain extends javax.swing.JFrame
         goTo2.setForeground(new java.awt.Color(102, 255, 255));
         goTo2.setText("2");
         goTo2.setBorderPainted(false);
+        goTo2.setMargin(new java.awt.Insets(1, 1, 1, 1));
         goToBottomPanel.add(goTo2);
 
         goTo3.setBackground(new java.awt.Color(51, 51, 51));
@@ -252,6 +264,7 @@ public class ElevatorMain extends javax.swing.JFrame
         goTo3.setForeground(new java.awt.Color(102, 255, 255));
         goTo3.setText("3");
         goTo3.setBorderPainted(false);
+        goTo3.setMargin(new java.awt.Insets(1, 1, 1, 1));
         goToBottomPanel.add(goTo3);
 
         goTo4.setBackground(new java.awt.Color(51, 51, 51));
@@ -259,6 +272,7 @@ public class ElevatorMain extends javax.swing.JFrame
         goTo4.setForeground(new java.awt.Color(102, 255, 255));
         goTo4.setText("4");
         goTo4.setBorderPainted(false);
+        goTo4.setMargin(new java.awt.Insets(1, 1, 1, 1));
         goToBottomPanel.add(goTo4);
 
         goTo5.setBackground(new java.awt.Color(51, 51, 51));
@@ -266,6 +280,7 @@ public class ElevatorMain extends javax.swing.JFrame
         goTo5.setForeground(new java.awt.Color(102, 255, 255));
         goTo5.setText("5");
         goTo5.setBorderPainted(false);
+        goTo5.setMargin(new java.awt.Insets(1, 1, 1, 1));
         goToBottomPanel.add(goTo5);
 
         goTo6.setBackground(new java.awt.Color(51, 51, 51));
@@ -273,6 +288,7 @@ public class ElevatorMain extends javax.swing.JFrame
         goTo6.setForeground(new java.awt.Color(102, 255, 255));
         goTo6.setText("6");
         goTo6.setBorderPainted(false);
+        goTo6.setMargin(new java.awt.Insets(1, 1, 1, 1));
         goToBottomPanel.add(goTo6);
 
         goTo7.setBackground(new java.awt.Color(51, 51, 51));
@@ -280,6 +296,7 @@ public class ElevatorMain extends javax.swing.JFrame
         goTo7.setForeground(new java.awt.Color(102, 255, 255));
         goTo7.setText("7");
         goTo7.setBorderPainted(false);
+        goTo7.setMargin(new java.awt.Insets(1, 1, 1, 1));
         goToBottomPanel.add(goTo7);
 
         goTo8.setBackground(new java.awt.Color(51, 51, 51));
@@ -287,6 +304,7 @@ public class ElevatorMain extends javax.swing.JFrame
         goTo8.setForeground(new java.awt.Color(102, 255, 255));
         goTo8.setText("8");
         goTo8.setBorderPainted(false);
+        goTo8.setMargin(new java.awt.Insets(1, 1, 1, 1));
         goToBottomPanel.add(goTo8);
 
         goToCancel.setBackground(new java.awt.Color(51, 51, 51));
@@ -294,6 +312,7 @@ public class ElevatorMain extends javax.swing.JFrame
         goToCancel.setForeground(new java.awt.Color(255, 51, 51));
         goToCancel.setText("Cancel");
         goToCancel.setBorderPainted(false);
+        goToCancel.setMargin(new java.awt.Insets(1, 1, 1, 1));
         goToBottomPanel.add(goToCancel);
 
         goToFrame.getContentPane().add(goToBottomPanel, java.awt.BorderLayout.CENTER);
@@ -370,63 +389,71 @@ public class ElevatorMain extends javax.swing.JFrame
 
         innerLeftPanel.setBackground(new java.awt.Color(153, 153, 153));
         innerLeftPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        innerLeftPanel.setPreferredSize(new java.awt.Dimension(100, 100));
+        innerLeftPanel.setPreferredSize(new java.awt.Dimension(140, 200));
         innerLeftPanel.setLayout(new java.awt.GridLayout(8, 0, 0, 5));
 
         eightButton.setBackground(new java.awt.Color(102, 102, 102));
-        eightButton.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        eightButton.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         eightButton.setForeground(new java.awt.Color(255, 255, 255));
         eightButton.setText("8");
         eightButton.setBorderPainted(false);
+        eightButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         innerLeftPanel.add(eightButton);
 
         sevenButton.setBackground(new java.awt.Color(102, 102, 102));
-        sevenButton.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        sevenButton.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         sevenButton.setForeground(new java.awt.Color(255, 255, 255));
         sevenButton.setText("7");
         sevenButton.setBorderPainted(false);
+        sevenButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         innerLeftPanel.add(sevenButton);
 
         sixButton.setBackground(new java.awt.Color(102, 102, 102));
-        sixButton.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        sixButton.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         sixButton.setForeground(new java.awt.Color(255, 255, 255));
         sixButton.setText("6");
         sixButton.setBorderPainted(false);
+        sixButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         innerLeftPanel.add(sixButton);
 
         fiveButton.setBackground(new java.awt.Color(102, 102, 102));
-        fiveButton.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        fiveButton.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         fiveButton.setForeground(new java.awt.Color(255, 255, 255));
         fiveButton.setText("5");
         fiveButton.setBorderPainted(false);
+        fiveButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         innerLeftPanel.add(fiveButton);
 
         fourButton.setBackground(new java.awt.Color(102, 102, 102));
-        fourButton.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        fourButton.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         fourButton.setForeground(new java.awt.Color(255, 255, 255));
         fourButton.setText("4");
         fourButton.setBorderPainted(false);
+        fourButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         innerLeftPanel.add(fourButton);
 
         threeButton.setBackground(new java.awt.Color(102, 102, 102));
-        threeButton.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        threeButton.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         threeButton.setForeground(new java.awt.Color(255, 255, 255));
         threeButton.setText("3");
         threeButton.setBorderPainted(false);
+        threeButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         innerLeftPanel.add(threeButton);
 
         twoButton.setBackground(new java.awt.Color(102, 102, 102));
-        twoButton.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        twoButton.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         twoButton.setForeground(new java.awt.Color(255, 255, 255));
         twoButton.setText("2");
         twoButton.setBorderPainted(false);
+        twoButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         innerLeftPanel.add(twoButton);
 
         oneButton.setBackground(new java.awt.Color(102, 102, 102));
-        oneButton.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        oneButton.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         oneButton.setForeground(new java.awt.Color(255, 255, 255));
         oneButton.setText("1");
         oneButton.setBorderPainted(false);
+        oneButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         innerLeftPanel.add(oneButton);
 
         centerPanel.add(innerLeftPanel, java.awt.BorderLayout.WEST);
@@ -438,7 +465,7 @@ public class ElevatorMain extends javax.swing.JFrame
         innerCenterPanel.setLayout(innerCenterPanelLayout);
         innerCenterPanelLayout.setHorizontalGroup(
             innerCenterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 430, Short.MAX_VALUE)
+            .addGap(0, 390, Short.MAX_VALUE)
         );
         innerCenterPanelLayout.setVerticalGroup(
             innerCenterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -692,7 +719,7 @@ public class ElevatorMain extends javax.swing.JFrame
         @Override
         public void actionPerformed(ActionEvent e)
         {
-            elevator.update(pickUp);
+            elevator.update(pickUp,dropOff);
             repaint();
             
             if (elevator.getDirection() > 0 && !elevator.stopped())
@@ -769,6 +796,7 @@ public class ElevatorMain extends javax.swing.JFrame
     // Button Listener for floor buttons.
     class ButtonListenerFloors implements ActionListener
     {
+        Point p;
         public void popUpFrame()
         {
             goToFrame.setVisible(true);
@@ -786,6 +814,11 @@ public class ElevatorMain extends javax.swing.JFrame
                {
                    // Open the destination floor pop up panel (new frame).
                    popUpFrame();
+                   gtl.setSource(eightButton,8);
+                   p = innerCenterPanel.getLocationOnScreen();
+                   p.y = eightButton.getLocationOnScreen().y;
+                   p.x = p.x +3;
+                   goToFrame.setLocation(p);
                }
            }
            else if (e.getSource() == sevenButton)
@@ -793,6 +826,11 @@ public class ElevatorMain extends javax.swing.JFrame
                if (!elevator.isStopped() || elevator.getCurrentFloor() != 7)
                {
                    popUpFrame();
+                   gtl.setSource(sevenButton,7);
+                   p = innerCenterPanel.getLocationOnScreen();
+                   p.y = sevenButton.getLocationOnScreen().y;
+                   p.x = p.x +3;
+                   goToFrame.setLocation(p);
                }
            }
            else if (e.getSource() == sixButton)
@@ -800,6 +838,11 @@ public class ElevatorMain extends javax.swing.JFrame
                if (!elevator.isStopped() || elevator.getCurrentFloor() != 6)
                {
                     popUpFrame();
+                    gtl.setSource(sixButton,6);
+                    p = innerCenterPanel.getLocationOnScreen();
+                    p.y = sixButton.getLocationOnScreen().y;
+                    p.x = p.x +3;
+                    goToFrame.setLocation(p);
                }
            }
            else if (e.getSource() == fiveButton)
@@ -807,6 +850,11 @@ public class ElevatorMain extends javax.swing.JFrame
                if (!elevator.isStopped() || elevator.getCurrentFloor() != 5)
                {
                     popUpFrame();
+                    gtl.setSource(fiveButton,5);
+                    p = innerCenterPanel.getLocationOnScreen();
+                    p.y = fiveButton.getLocationOnScreen().y;
+                    p.x = p.x +3;
+                    goToFrame.setLocation(p);
                }
            }
            else if (e.getSource() == fourButton)
@@ -814,6 +862,11 @@ public class ElevatorMain extends javax.swing.JFrame
                if (!elevator.isStopped() || elevator.getCurrentFloor() != 4)
                {
                     popUpFrame();
+                    gtl.setSource(fourButton,4);
+                    p = innerCenterPanel.getLocationOnScreen();
+                    p.y = fourButton.getLocationOnScreen().y-goToFrame.getHeight()+fourButton.getHeight();
+                    p.x = p.x +3;
+                    goToFrame.setLocation(p);
                }
            }
            else if (e.getSource() == threeButton)
@@ -821,6 +874,11 @@ public class ElevatorMain extends javax.swing.JFrame
                if (!elevator.isStopped() || elevator.getCurrentFloor() != 3)
                {
                     popUpFrame();
+                    gtl.setSource(threeButton,3);
+                    p = innerCenterPanel.getLocationOnScreen();
+                    p.y = threeButton.getLocationOnScreen().y-goToFrame.getHeight()+threeButton.getHeight();
+                    p.x = p.x +3;
+                    goToFrame.setLocation(p);
                }
            }
            else if (e.getSource() == twoButton)
@@ -828,6 +886,11 @@ public class ElevatorMain extends javax.swing.JFrame
                if (!elevator.isStopped() || elevator.getCurrentFloor() != 2)
                {
                     popUpFrame();
+                    gtl.setSource(twoButton,2);
+                    p = innerCenterPanel.getLocationOnScreen();
+                    p.y = twoButton.getLocationOnScreen().y-goToFrame.getHeight()+twoButton.getHeight();
+                    p.x = p.x +3;
+                    goToFrame.setLocation(p);
                }
            }
            else if (e.getSource() == oneButton)
@@ -835,173 +898,179 @@ public class ElevatorMain extends javax.swing.JFrame
                if (!elevator.isStopped() || elevator.getCurrentFloor() != 1)
                {
                     popUpFrame();
+                    gtl.setSource(oneButton,1);
+                    p = innerCenterPanel.getLocationOnScreen();
+                    p.y = oneButton.getLocationOnScreen().y-goToFrame.getHeight()+oneButton.getHeight();
+                    p.x = p.x +3;
+                    goToFrame.setLocation(p);
                }
                
            }
-           System.out.println("Pickup: " + pickUp);
+           //timer1.stop();
+           //System.out.println("Pickup: " + pickUp);
         }
     }
     
     // Mouse Listener for right-click.
     // If a button is right clicked and that button has a pickup value greater than 0,
     // that number is decreased by 1, until 0.
-    class MouseClickListener implements MouseListener
-    {
-        JButton temp;
-        @Override
-        public void mouseClicked(MouseEvent e)
-        {
-            temp = (JButton)e.getSource();
-            if (SwingUtilities.isRightMouseButton(e) && temp.isEnabled())
-            {
-               if (e.getSource() == eightButton)
-               {
-                   if (!elevator.isStopped() || elevator.getCurrentFloor() != 8)
-                   {
-                        if (pickUp.get(8) > 1)
-                        {
-                             pickUp.put(8, pickUp.get(8) - 1);
-                             eightButton.setText("8 (" + pickUp.get(8) + ")");
-                        }
-                        else
-                        {
-                             pickUp.put(8, 0);
-                             eightButton.setBackground(n);
-                             eightButton.setText("8");
-                        }
-                    }
-               }
-               else if (e.getSource() == sevenButton)
-               {
-                   if (!elevator.isStopped() || elevator.getCurrentFloor() != 7)
-                   {
-                        if (pickUp.get(7) > 1)
-                        {
-                             pickUp.put(7, pickUp.get(7) - 1);
-                             sevenButton.setText("7 (" + pickUp.get(7) + ")");
-                        }
-                        else
-                        {
-                             pickUp.put(7, 0);
-                             sevenButton.setBackground(n);
-                             sevenButton.setText("7");
-                        }
-                   }
-               }
-               else if (e.getSource() == sixButton)
-               {
-                   if (!elevator.isStopped() || elevator.getCurrentFloor() != 6)
-                   {
-                        if (pickUp.get(6) > 1)
-                        {
-                             pickUp.put(6, pickUp.get(6) - 1);
-                             sixButton.setText("6 (" + pickUp.get(6) + ")");
-                        }
-                        else
-                        {
-                             pickUp.put(6, 0);
-                             sixButton.setBackground(n);
-                             sixButton.setText("6");
-                        }
-                   }
-               }
-               else if (e.getSource() == fiveButton)
-               {
-                   if (!elevator.isStopped() || elevator.getCurrentFloor() != 5)
-                   {
-                        if (pickUp.get(5) > 1)
-                        {
-                             pickUp.put(5, pickUp.get(5) - 1);
-                             fiveButton.setText("5 (" + pickUp.get(5) + ")");
-                        }
-                        else
-                        {
-                             pickUp.put(5, 0);
-                             fiveButton.setBackground(n);
-                             fiveButton.setText("5");
-                        }
-                   }
-               }
-               else if (e.getSource() == fourButton)
-               {
-                   if (!elevator.isStopped() || elevator.getCurrentFloor() != 4)
-                   {
-                        if (pickUp.get(4) > 1)
-                        {
-                             pickUp.put(4, pickUp.get(4) - 1);
-                             fourButton.setText("4 (" + pickUp.get(4) + ")");
-                        }
-                        else
-                        {
-                             pickUp.put(4, 0);
-                             fourButton.setBackground(n);
-                             fourButton.setText("4");
-                        }
-                   }
-               }
-               else if (e.getSource() == threeButton)
-               {
-                   if (!elevator.isStopped() || elevator.getCurrentFloor() != 3)
-                   {
-                        if (pickUp.get(3) > 1)
-                        {
-                             pickUp.put(3, pickUp.get(3) - 1);
-                             threeButton.setText("3 (" + pickUp.get(3) + ")");
-                        }
-                        else
-                        {
-                             pickUp.put(3, 0);
-                             threeButton.setBackground(n);
-                             threeButton.setText("3");
-                        }
-                   }
-               }
-               else if (e.getSource() == twoButton)
-               {
-                   if (!elevator.isStopped() || elevator.getCurrentFloor() != 2)
-                   {
-                        if (pickUp.get(2) > 1)
-                        {
-                             pickUp.put(2, pickUp.get(2) - 1);
-                             twoButton.setText("2 (" + pickUp.get(2) + ")");
-                        }
-                        else
-                        {
-                             pickUp.put(2, 0);
-                             twoButton.setBackground(n);
-                             twoButton.setText("2");
-                        }
-                   }
-               }
-               else if (e.getSource() == oneButton)
-               {
-                   if (!elevator.isStopped() || elevator.getCurrentFloor() != 1)
-                   {
-                        if (pickUp.get(1) > 1)
-                        {
-                             pickUp.put(1, pickUp.get(1) - 1);
-                             oneButton.setText("1 (" + pickUp.get(1) + ")");
-                        }
-                        else
-                        {
-                             pickUp.put(1, 0);
-                             oneButton.setBackground(n);
-                             oneButton.setText("1");
-                        }
-                   }
-               }
-               System.out.println("Pickup: " + pickUp);
-            }
-            
-        }
-
-        // Implement abstract methods.
-        @Override public void mousePressed(MouseEvent e){}
-        @Override public void mouseReleased(MouseEvent e){}
-        @Override public void mouseEntered(MouseEvent e){}
-        @Override public void mouseExited(MouseEvent e){}
-            
-    }
+//    class MouseClickListener implements MouseListener
+//    {
+//        JButton temp;
+//        @Override
+//        public void mouseClicked(MouseEvent e)
+//        {
+//            temp = (JButton)e.getSource();
+//            if (SwingUtilities.isRightMouseButton(e) && temp.isEnabled())
+//            {
+//               if (e.getSource() == eightButton)
+//               {
+//                   if (!elevator.isStopped() || elevator.getCurrentFloor() != 8)
+//                   {
+//                        if (pickUp.get(8) > 1)
+//                        {
+//                             pickUp.put(8, pickUp.get(8) - 1);
+//                             eightButton.setText("8 (" + pickUp.get(8) + ")");
+//                        }
+//                        else
+//                        {
+//                             pickUp.put(8, 0);
+//                             eightButton.setBackground(n);
+//                             eightButton.setText("8");
+//                        }
+//                    }
+//               }
+//               else if (e.getSource() == sevenButton)
+//               {
+//                   if (!elevator.isStopped() || elevator.getCurrentFloor() != 7)
+//                   {
+//                        if (pickUp.get(7) > 1)
+//                        {
+//                             pickUp.put(7, pickUp.get(7) - 1);
+//                             sevenButton.setText("7 (" + pickUp.get(7) + ")");
+//                        }
+//                        else
+//                        {
+//                             pickUp.put(7, 0);
+//                             sevenButton.setBackground(n);
+//                             sevenButton.setText("7");
+//                        }
+//                   }
+//               }
+//               else if (e.getSource() == sixButton)
+//               {
+//                   if (!elevator.isStopped() || elevator.getCurrentFloor() != 6)
+//                   {
+//                        if (pickUp.get(6) > 1)
+//                        {
+//                             pickUp.put(6, pickUp.get(6) - 1);
+//                             sixButton.setText("6 (" + pickUp.get(6) + ")");
+//                        }
+//                        else
+//                        {
+//                             pickUp.put(6, 0);
+//                             sixButton.setBackground(n);
+//                             sixButton.setText("6");
+//                        }
+//                   }
+//               }
+//               else if (e.getSource() == fiveButton)
+//               {
+//                   if (!elevator.isStopped() || elevator.getCurrentFloor() != 5)
+//                   {
+//                        if (pickUp.get(5) > 1)
+//                        {
+//                             pickUp.put(5, pickUp.get(5) - 1);
+//                             fiveButton.setText("5 (" + pickUp.get(5) + ")");
+//                        }
+//                        else
+//                        {
+//                             pickUp.put(5, 0);
+//                             fiveButton.setBackground(n);
+//                             fiveButton.setText("5");
+//                        }
+//                   }
+//               }
+//               else if (e.getSource() == fourButton)
+//               {
+//                   if (!elevator.isStopped() || elevator.getCurrentFloor() != 4)
+//                   {
+//                        if (pickUp.get(4) > 1)
+//                        {
+//                             pickUp.put(4, pickUp.get(4) - 1);
+//                             fourButton.setText("4 (" + pickUp.get(4) + ")");
+//                        }
+//                        else
+//                        {
+//                             pickUp.put(4, 0);
+//                             fourButton.setBackground(n);
+//                             fourButton.setText("4");
+//                        }
+//                   }
+//               }
+//               else if (e.getSource() == threeButton)
+//               {
+//                   if (!elevator.isStopped() || elevator.getCurrentFloor() != 3)
+//                   {
+//                        if (pickUp.get(3) > 1)
+//                        {
+//                             pickUp.put(3, pickUp.get(3) - 1);
+//                             threeButton.setText("3 (" + pickUp.get(3) + ")");
+//                        }
+//                        else
+//                        {
+//                             pickUp.put(3, 0);
+//                             threeButton.setBackground(n);
+//                             threeButton.setText("3");
+//                        }
+//                   }
+//               }
+//               else if (e.getSource() == twoButton)
+//               {
+//                   if (!elevator.isStopped() || elevator.getCurrentFloor() != 2)
+//                   {
+//                        if (pickUp.get(2) > 1)
+//                        {
+//                             pickUp.put(2, pickUp.get(2) - 1);
+//                             twoButton.setText("2 (" + pickUp.get(2) + ")");
+//                        }
+//                        else
+//                        {
+//                             pickUp.put(2, 0);
+//                             twoButton.setBackground(n);
+//                             twoButton.setText("2");
+//                        }
+//                   }
+//               }
+//               else if (e.getSource() == oneButton)
+//               {
+//                   if (!elevator.isStopped() || elevator.getCurrentFloor() != 1)
+//                   {
+//                        if (pickUp.get(1) > 1)
+//                        {
+//                             pickUp.put(1, pickUp.get(1) - 1);
+//                             oneButton.setText("1 (" + pickUp.get(1) + ")");
+//                        }
+//                        else
+//                        {
+//                             pickUp.put(1, 0);
+//                             oneButton.setBackground(n);
+//                             oneButton.setText("1");
+//                        }
+//                   }
+//               }
+//               System.out.println("Pickup: " + pickUp);
+//            }
+//            
+//        }
+//
+//        // Implement abstract methods.
+//        @Override public void mousePressed(MouseEvent e){}
+//        @Override public void mouseReleased(MouseEvent e){}
+//        @Override public void mouseEntered(MouseEvent e){}
+//        @Override public void mouseExited(MouseEvent e){}
+//            
+//    }
     
     class ComboListener implements ActionListener
     {
@@ -1059,8 +1128,9 @@ public class ElevatorMain extends javax.swing.JFrame
             timer1.stop();
             elevator.stopT2();
             elevator.setY((innerCenterPanel.getHeight())-elevator.getHeight()-5);
-            stopButton.setEnabled(false);
             stopButton.setBackground(dis);
+            stopButton.setEnabled(false);
+            
             startButton.setEnabled(true);
             startButton.setBackground(en);
             elevator.pushStop();
@@ -1103,10 +1173,20 @@ public class ElevatorMain extends javax.swing.JFrame
     
     class GoToButtonListener implements ActionListener
     {
+        JButton source;
+        int floor = 1;
+        
+        public void setSource(JButton source, int floor)
+        {
+            this.source = source;
+            this.floor = floor;
+        }
+        
         @Override
         public void actionPerformed(ActionEvent e)
         {
             JButton j = (JButton)e.getSource();
+            
             if (j == goToCancel)
             {
                 goToFrame.setVisible(false);
@@ -1114,94 +1194,132 @@ public class ElevatorMain extends javax.swing.JFrame
             else if (j == goTo8)
             {
                 dropOff.put(8, dropOff.get(8)+1);
+                j.setText("8 (" + dropOff.get(8) + ")");
                 System.out.println("Drop off: " + dropOff);
                 
-                pickUp.put(8, pickUp.get(8) + 1);
-                eightButton.setBackground(c);
-                eightButton.setText("8 (" + pickUp.get(8) + ")");
-            
+                pickUp.put(floor, pickUp.get(floor) + 1);
+                source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
+                source.setBackground(c);
+                System.out.println(source.getText());
             }
             else if (j == goTo7)
             {
                 dropOff.put(7, dropOff.get(7)+1);
+                j.setText("7 (" + dropOff.get(7) + ")");
                 System.out.println("Drop off: " + dropOff);
                 
-                pickUp.put(7, pickUp.get(7) + 1);
-                sevenButton.setText("7 (" + pickUp.get(7) + ")");
-                sevenButton.setBackground(c);
+                pickUp.put(floor, pickUp.get(floor) + 1);
+                source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
+                source.setBackground(c);
+                System.out.println(source.getText());
             }
+            //Working
             else if (j == goTo6)
             {
                 dropOff.put(6, dropOff.get(6)+1);
+                j.setText("6 (" + dropOff.get(6) + ")");
                 System.out.println("Drop off: " + dropOff);
                 
-                pickUp.put(6, pickUp.get(6) + 1);
-                sixButton.setText("6 (" + pickUp.get(6) + ")");
-                sixButton.setBackground(c);
+                pickUp.put(floor, pickUp.get(floor) + 1);
+                source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
+                source.setBackground(c);
+                System.out.println(source.getText());
             }
             else if (j == goTo5)
             {
                 dropOff.put(5, dropOff.get(5)+1);
+                j.setText("5 (" + dropOff.get(5) + ")");
                 System.out.println("Drop off: " + dropOff);
                 
-                pickUp.put(5, pickUp.get(5) + 1);
-                fiveButton.setText("5 (" + pickUp.get(5) + ")");
-                fiveButton.setBackground(c);
+                pickUp.put(floor, pickUp.get(floor) + 1);
+                source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
+                source.setBackground(c);
+                System.out.println(source.getText());
             }
             else if (j == goTo4)
             {
                 dropOff.put(4, dropOff.get(4)+1);
+                j.setText("4 (" + dropOff.get(4) + ")");
                 System.out.println("Drop off: " + dropOff);
                 
-                pickUp.put(4, pickUp.get(4) + 1);
-                fourButton.setText("4 (" + pickUp.get(4) + ")");
-                fourButton.setBackground(c);
+                pickUp.put(floor, pickUp.get(floor) + 1);
+                source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
+                source.setBackground(c);
+                System.out.println(source.getText());
             }
             else if (j == goTo3)
             {
                 dropOff.put(3, dropOff.get(3)+1);
+                j.setText("3 (" + dropOff.get(3) + ")");
                 System.out.println("Drop off: " + dropOff);
                 
-                pickUp.put(3, pickUp.get(3) + 1);
-                threeButton.setText("3 (" + pickUp.get(3) + ")");
-                threeButton.setBackground(c);
+                pickUp.put(floor, pickUp.get(floor) + 1);
+                source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
+                source.setBackground(c);
+                System.out.println(source.getText());
             }
             else if (j == goTo2)
             {
                 dropOff.put(2, dropOff.get(2)+1);
+                j.setText("2 (" + dropOff.get(2) + ")");
                 System.out.println("Drop off: " + dropOff);
                 
-                pickUp.put(2, pickUp.get(2) + 1);
-                twoButton.setText("2 (" + pickUp.get(2) + ")");
-                twoButton.setBackground(c);
+                pickUp.put(floor, pickUp.get(floor) + 1);
+                source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
+                source.setBackground(c);
+                System.out.println(source.getText());
             }
             else if (j == goTo1)
             {
                 dropOff.put(1, dropOff.get(1)+1);
+                j.setText("1 (" + dropOff.get(1) + ")");
                 System.out.println("Drop off: " + dropOff);
                 
-                pickUp.put(1, pickUp.get(1) + 1);
-                oneButton.setText("1 (" + pickUp.get(1) + ")");
-                oneButton.setBackground(c);
+                pickUp.put(floor, pickUp.get(floor) + 1);
+                source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
+                source.setBackground(c);
+                System.out.println(source.getText());
             }
             
             goToFrame.setVisible(false);
             goToClicked = false;
             goToFrame.setEnabled(true);
+            System.out.println("Pickup: " + pickUp);
+            
+            // Update all floor button labels
+            for (int i = 0; i<floors.size(); i++)
+            {
+                if (pickUp.get(i+1)>0 || dropOff.get(i+1)>0)
+                floors.get(i).setText(i+1 + " (in: " + pickUp.get(i+1) + ", out: "+dropOff.get(i+1)+")");
+            }
+            
+            
+            //timer1.start();
         }
         
     }
     
     class HoverListener implements MouseListener
     {
-        int hoverDelay = 1000;
+        int hoverDelay = 2000;
         boolean done = false;
+        Point p;
+        JButton source;
         Timer hoverTimer = new Timer(hoverDelay,new ActionListener() {                
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (done == false && !goToClicked)
                 {
-                    goToFrame.setLocationRelativeTo(null);
+                    p = innerCenterPanel.getLocationOnScreen();
+                    
+                    if (source == eightButton || source == sevenButton  || source == sixButton || source == fiveButton)
+                        p.y = source.getLocationOnScreen().y;
+                    else
+                        p.y = source.getLocationOnScreen().y-goToFrame.getHeight()+oneButton.getHeight();
+                    
+                    p.x = p.x +3;
+                    
+                    goToFrame.setLocation(p);
                     goToFrame.setEnabled(false);
                     goToFrame.setVisible(true);
                     done = true;
@@ -1213,6 +1331,7 @@ public class ElevatorMain extends javax.swing.JFrame
         
         @Override public void mouseEntered(MouseEvent e)
         {
+            source = (JButton)e.getSource();
             if (!goToClicked)
                 hoverTimer.start();
         }
