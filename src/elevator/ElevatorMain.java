@@ -30,6 +30,7 @@ public class ElevatorMain extends javax.swing.JFrame
     boolean goToClicked = false;
     Timer timer1;
     Elevator elevator; // Main elevator object.
+    Timer hoverTimer;
     
     GoToBottomPanel goToBottomPanel = new GoToBottomPanel();
     
@@ -800,7 +801,6 @@ public class ElevatorMain extends javax.swing.JFrame
         public void popUpFrame()
         {
             goToFrame.setVisible(true);
-            goToFrame.setLocationRelativeTo(null);
             goToFrame.setEnabled(true);
             goToClicked = true;
         }
@@ -1294,6 +1294,8 @@ public class ElevatorMain extends javax.swing.JFrame
             }
             
             
+            hoverTimer.stop();
+            
             //timer1.start();
         }
         
@@ -1305,29 +1307,11 @@ public class ElevatorMain extends javax.swing.JFrame
         boolean done = false;
         Point p;
         JButton source;
-        Timer hoverTimer = new Timer(hoverDelay,new ActionListener() {                
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (done == false && !goToClicked)
-                {
-                    p = innerCenterPanel.getLocationOnScreen();
-                    
-                    if (source == eightButton || source == sevenButton  || source == sixButton || source == fiveButton)
-                        p.y = source.getLocationOnScreen().y;
-                    else
-                        p.y = source.getLocationOnScreen().y-goToFrame.getHeight()+oneButton.getHeight();
-                    
-                    p.x = p.x +3;
-                    
-                    goToFrame.setLocation(p);
-                    goToFrame.setEnabled(false);
-                    goToFrame.setVisible(true);
-                    done = true;
-                }
-                hoverTimer.stop();
-                                    
-            }
-        });
+        
+        public HoverListener()
+        {
+            hoverTimer = new Timer(hoverDelay,new HoverTimerListener());
+        }
         
         @Override public void mouseEntered(MouseEvent e)
         {
@@ -1351,15 +1335,42 @@ public class ElevatorMain extends javax.swing.JFrame
         @Override public void mouseClicked(MouseEvent e){}
         @Override public void mousePressed(MouseEvent e){}
         @Override public void mouseReleased(MouseEvent e){}
+        
+        class HoverTimerListener implements ActionListener
+        {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (done == false && !goToClicked)
+                {
+                    p = innerCenterPanel.getLocationOnScreen();
+                    
+                    if (source == eightButton || source == sevenButton  || source == sixButton || source == fiveButton)
+                        p.y = source.getLocationOnScreen().y;
+                    else
+                        p.y = source.getLocationOnScreen().y-goToFrame.getHeight()+oneButton.getHeight();
+                    
+                    p.x = p.x +3;
+                    
+                    goToFrame.setLocation(p);
+                    goToFrame.setEnabled(false);
+                    goToFrame.setVisible(true);
+                    done = true;
+                }
+                hoverTimer.stop();
+                System.out.println("?");                    
+            }
+        }
     }
+    
+    
     
     class GoToFocusListener implements FocusListener
     {
         @Override
         public void focusLost(FocusEvent e)
         {
-            goToFrame.setEnabled(false);
-            goToFrame.setVisible(false);
+//            goToFrame.setEnabled(false);
+//            goToFrame.setVisible(false);
         }
         
         @Override public void focusGained(FocusEvent e){}
