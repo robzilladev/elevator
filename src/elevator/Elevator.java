@@ -173,7 +173,10 @@ public class Elevator
             stop = true; 
             t.stop(); // Stop main animation timer.
             setWait((int)pickupMap.get(8), (int)dropOffMap.get(8)); // Set the wait time (num passengers) for the pickup timer.
-            ElevatorMain.statusLabel.setText("Picking up ["+ waitIn +"] passengers on floor ["+ currentFloor +"]");//fix
+            if ((int)dropOffMap.get(8) > 1)
+                ElevatorMain.statusLabel.setText("Dropping off ["+ waitOut +"] passengers on floor ["+ currentFloor +"]");
+            else
+                ElevatorMain.statusLabel.setText("Picking up ["+ waitIn +"] passengers on floor ["+ currentFloor +"]");
             pickupMap.put(8, 0); // Reset pickup to 0.
             dropOffMap.put(8, 0);
             t2.start(); // Start the pickup timer.
@@ -187,7 +190,10 @@ public class Elevator
             stop = true;
             t.stop();
             setWait((int)pickupMap.get(7),(int)dropOffMap.get(7));
-            ElevatorMain.statusLabel.setText("Picking up ["+ waitIn +"] passengers on floor ["+ currentFloor +"]");
+            if ((int)dropOffMap.get(7) > 1)
+                ElevatorMain.statusLabel.setText("Dropping off ["+ waitOut +"] passengers on floor ["+ currentFloor +"]");
+            else
+                ElevatorMain.statusLabel.setText("Picking up ["+ waitIn +"] passengers on floor ["+ currentFloor +"]");
             pickupMap.put(7, 0);
             dropOffMap.put(7,0);
             t2.start();
@@ -201,7 +207,10 @@ public class Elevator
             stop = true;
             t.stop();
             setWait((int)pickupMap.get(6),(int)dropOffMap.get(6));
-            ElevatorMain.statusLabel.setText("Picking up ["+ waitIn +"] passengers on floor ["+ currentFloor +"]");
+            if ((int)dropOffMap.get(6) > 1)
+                ElevatorMain.statusLabel.setText("Dropping off ["+ waitOut +"] passengers on floor ["+ currentFloor +"]");
+            else
+                ElevatorMain.statusLabel.setText("Picking up ["+ waitIn +"] passengers on floor ["+ currentFloor +"]");
             pickupMap.put(6, 0);
             dropOffMap.put(6,0);
             t2.start();
@@ -215,7 +224,10 @@ public class Elevator
             stop = true;
             t.stop();
             setWait((int)pickupMap.get(5),(int)dropOffMap.get(5));
-            ElevatorMain.statusLabel.setText("Picking up ["+ waitIn +"] passengers on floor ["+ currentFloor +"]");
+            if ((int)dropOffMap.get(5) > 1)
+                ElevatorMain.statusLabel.setText("Dropping off ["+ waitOut +"] passengers on floor ["+ currentFloor +"]");
+            else
+                ElevatorMain.statusLabel.setText("Picking up ["+ waitIn +"] passengers on floor ["+ currentFloor +"]");
             pickupMap.put(5, 0);
             dropOffMap.put(5,0);
             t2.start();
@@ -229,7 +241,10 @@ public class Elevator
             stop = true;
             t.stop();
             setWait((int)pickupMap.get(4),(int)dropOffMap.get(4));
-            ElevatorMain.statusLabel.setText("Picking up ["+ waitIn +"] passengers on floor ["+ currentFloor +"]");
+            if ((int)dropOffMap.get(4) > 1)
+                ElevatorMain.statusLabel.setText("Dropping off ["+ waitOut +"] passengers on floor ["+ currentFloor +"]");
+            else
+                ElevatorMain.statusLabel.setText("Picking up ["+ waitIn +"] passengers on floor ["+ currentFloor +"]");
             pickupMap.put(4, 0);
             dropOffMap.put(4, 0);
             t2.start();
@@ -243,7 +258,10 @@ public class Elevator
             stop = true;
             t.stop();
             setWait((int)pickupMap.get(3),(int)dropOffMap.get(3));
-            ElevatorMain.statusLabel.setText("Picking up ["+ waitIn +"] passengers on floor ["+ currentFloor +"]");
+            if ((int)dropOffMap.get(3) > 1)
+                ElevatorMain.statusLabel.setText("Dropping off ["+ waitOut +"] passengers on floor ["+ currentFloor +"]");
+            else
+                ElevatorMain.statusLabel.setText("Picking up ["+ waitIn +"] passengers on floor ["+ currentFloor +"]");
             pickupMap.put(3, 0);
             dropOffMap.put(3, 0);
             t2.start();
@@ -257,7 +275,10 @@ public class Elevator
             stop = true;
             t.stop();
             setWait((int)pickupMap.get(2),(int)dropOffMap.get(2));
-            ElevatorMain.statusLabel.setText("Picking up ["+ waitIn +"] passengers on floor ["+ currentFloor +"]");
+            if ((int)dropOffMap.get(2) > 1)
+                ElevatorMain.statusLabel.setText("Dropping off ["+ waitOut +"] passengers on floor ["+ currentFloor +"]");
+            else
+                ElevatorMain.statusLabel.setText("Picking up ["+ waitIn +"] passengers on floor ["+ currentFloor +"]");
             pickupMap.put(2, 0);
             dropOffMap.put(2,0);
             t2.start();
@@ -271,7 +292,10 @@ public class Elevator
             stop = true;
             t.stop();
             setWait((int)pickupMap.get(1),(int)dropOffMap.get(1));
-            ElevatorMain.statusLabel.setText("Picking up ["+ waitIn +"] passengers on floor ["+ currentFloor +"]");
+            if ((int)dropOffMap.get(1) > 1)
+                ElevatorMain.statusLabel.setText("Dropping off ["+ waitOut +"] passengers on floor ["+ currentFloor +"]");
+            else
+                ElevatorMain.statusLabel.setText("Picking up ["+ waitIn +"] passengers on floor ["+ currentFloor +"]");
             pickupMap.put(1, 0);
             dropOffMap.put(1, 0);
             t2.start();
@@ -388,19 +412,20 @@ public class Elevator
         {
             if (!pushStop)
             {
-                //callback.updatePickupLabel(currentFloor,wait);
                 if (waitOut > 0)
                 {
                     waitOut--;
+                    callback.updatePickupLabel(currentFloor,waitOut,"Dropping off");
                     buttons.get(currentFloor-1).setText(currentFloor +" (in: " + waitIn + ", out: "+waitOut+")");
                     if (waitOut == 0)
                         goToButtons.get(currentFloor-1).setText(""+currentFloor);
                     else
                         goToButtons.get(currentFloor-1).setText(currentFloor + " (" + waitOut + ")");
                 }
-                else if (waitIn > 0)
+                else if (waitIn > 1)
                 {
                     waitIn--;
+                    callback.updatePickupLabel(currentFloor,waitIn,"Picking up");
                     buttons.get(currentFloor-1).setText(currentFloor +" (in: " + waitIn + ", out: "+waitOut+")");
                     //callback.updatePickupLabel(currentFloor,wait);
                 }

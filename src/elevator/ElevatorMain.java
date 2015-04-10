@@ -584,9 +584,9 @@ public class ElevatorMain extends javax.swing.JFrame
         });
     }
     
-    public void updatePickupLabel(int floor, int num)
+    public void updatePickupLabel(int floor, int num, String action)
     {
-        statusLabel.setText("Picking up ["+ num +"] passengers on floor ["+ floor +"]");
+        statusLabel.setText(action + " ["+ num +"] passengers on floor ["+ floor +"]");
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1114,11 +1114,15 @@ public class ElevatorMain extends javax.swing.JFrame
             {
                 j.setEnabled(true);
             }
+            for(JButton j: goToFloors)
+            {
+                j.setEnabled(true);
+            }
             for (int i = floorsAvail; i<floors.size(); i++)
             {
                 floors.get(i).setBackground(Color.black);
                 floors.get(i).setEnabled(false);
-                
+                goToFloors.get(i).setEnabled(false);
             }
             
             //Stop timer and reset simulation.
@@ -1136,10 +1140,14 @@ public class ElevatorMain extends javax.swing.JFrame
             elevator.pushStop();
             elevator.stop();
             
-            // Resets the pickup counters.
+            // Resets the pickup/dropOff counters.
             for (int i = 1; i<=pickUp.size();i++)
             {
                 pickUp.put(i, 0);
+            }
+            for (int i = 1; i<=dropOff.size();i++)
+            {
+                dropOff.put(i, 0);
             }
             
             // Resets the button labels (pickup).
@@ -1149,6 +1157,12 @@ public class ElevatorMain extends javax.swing.JFrame
                 b.setText(""+j);
                 b.setBackground(n);
                 j++;
+            }
+            int k = 1;
+            for (JButton b: goToFloors)
+            {
+                b.setText(""+k);
+                k++;
             }
             
             statusLabel.setText("Standing by...");
