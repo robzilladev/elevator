@@ -1283,7 +1283,7 @@ public class ElevatorMain extends javax.swing.JFrame
             
             goToFrame.setVisible(false);
             goToClicked = false;
-            goToFrame.setEnabled(true);
+            goToFrame.setEnabled(false);
             System.out.println("Pickup: " + pickUp);
             
             // Update all floor button labels
