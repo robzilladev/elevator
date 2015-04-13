@@ -39,6 +39,7 @@ public class ElevatorMain extends javax.swing.JFrame
     HashMap<Integer, Integer> speed;
     ArrayList<JButton> floors; // List of buttons for easy access later.
     ArrayList<JButton> goToFloors;
+    static ArrayList<Passenger> passengers;
     
     ImageIcon logo = new javax.swing.ImageIcon(getClass().getResource("/elevator/logo.png"));
     
@@ -162,6 +163,8 @@ public class ElevatorMain extends javax.swing.JFrame
         goToFloors = new ArrayList<>();
         goToFloors.add(goTo1);goToFloors.add(goTo2);goToFloors.add(goTo3);goToFloors.add(goTo4);
         goToFloors.add(goTo5);goToFloors.add(goTo6);goToFloors.add(goTo7);goToFloors.add(goTo8);
+        
+        passengers = new ArrayList<>();
         
         // !!!Must be initialised LAST!!!
         elevator = new Elevator(0,0,0,0,timer1,floors,this,goToFloors);
@@ -672,7 +675,7 @@ public class ElevatorMain extends javax.swing.JFrame
            
             // Set up elevator.
             elevator.setLimitX((this.getHeight()));
-            elevator.setHeight((this.getHeight()/8)-7);
+            elevator.setHeight((this.getHeight()/8)-10);
             elevator.setWidth(60);
             elevator.setX((this.getWidth()/2)-(elevator.getWidth()/2));
             if (first == true)
@@ -855,6 +858,7 @@ public class ElevatorMain extends javax.swing.JFrame
                     p.y = fiveButton.getLocationOnScreen().y;
                     p.x = p.x +3;
                     goToFrame.setLocation(p);
+                    goToFloors.get(4).setEnabled(false);
                }
            }
            else if (e.getSource() == fourButton)
@@ -1227,12 +1231,14 @@ public class ElevatorMain extends javax.swing.JFrame
                 source.setBackground(c);
                 System.out.println(source.getText());
             }
-            //Working
+            //Testing objects for passengers.
             else if (j == goTo6)
             {
                 dropOff.put(6, dropOff.get(6)+1);
                 j.setText("6 (" + dropOff.get(6) + ")");
-                System.out.println("Drop off: " + dropOff);
+                
+                passengers.add(new Passenger(floor,6));
+                System.out.println(passengers.get(0));
                 
                 pickUp.put(floor, pickUp.get(floor) + 1);
                 source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
@@ -1370,8 +1376,7 @@ public class ElevatorMain extends javax.swing.JFrame
                     goToFrame.setVisible(true);
                     done = true;
                 }
-                hoverTimer.stop();
-                System.out.println("?");                    
+                hoverTimer.stop();                   
             }
         }
     }
@@ -1383,8 +1388,8 @@ public class ElevatorMain extends javax.swing.JFrame
         @Override
         public void focusLost(FocusEvent e)
         {
-//            goToFrame.setEnabled(false);
-//            goToFrame.setVisible(false);
+            goToFrame.setEnabled(false);
+            goToFrame.setVisible(false);
         }
         
         @Override public void focusGained(FocusEvent e){}

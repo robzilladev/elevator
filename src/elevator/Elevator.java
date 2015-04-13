@@ -20,11 +20,14 @@ public class Elevator
     private ArrayList<JButton> buttons;
     private ArrayList<JButton> goToButtons;
     
+    private HashMap<Integer,Integer> testIn = new HashMap<Integer,Integer>();
+    private HashMap<Integer,Integer> testOut = new HashMap<Integer,Integer>();
+    
     // Timer variables.
     private Timer t, t2;
     private int delay = 1000;
-    private int waitIn = 1;
-    private int waitOut = 1;
+    private int waitIn = 0;
+    private int waitOut = 0;
     private boolean stop = false;
     private boolean pushStop = false;
     
@@ -164,6 +167,18 @@ public class Elevator
     public HashMap update(HashMap pickupMap, HashMap dropOffMap)
     {
         checkFloor();
+        for (int i = 1; i<9; i++)
+        {
+            testIn.put(i,anyToPickUpAt(i));
+        }
+        System.out.println("In: " + testIn);
+        
+        for (int i = 1; i<9; i++)
+        {
+            testOut.put(i,anyToDropOffAt(i));
+        }
+        System.out.println("Out: " + testOut);
+        System.out.println("In: " + testIn);
         
         // Level 8.
         if (y+height < (int)floors.get(0) && y > (int)floors.get(0)-height-5 && (int)pickupMap.get(8) > 0 ||
@@ -200,37 +215,70 @@ public class Elevator
         }
         
         // Level 6.
-        else if (y+height < (int)floors.get(2) && y > (int)floors.get(2)-height-5 && (int)pickupMap.get(6) > 0
-                    || y+height < (int)floors.get(2) && y > (int)floors.get(2)-height-5 && (int)dropOffMap.get(6) > 0)
+        else if (y+height < (int)floors.get(2) && y > (int)floors.get(2)-height-5)
         {
-            y = (int)(floors.get(2))-height-3;
-            stop = true;
-            t.stop();
-            setWait((int)pickupMap.get(6),(int)dropOffMap.get(6));
-            if ((int)dropOffMap.get(6) > 1)
+            if (testOut.get(6) > 0)
+            {
+                y = (int)(floors.get(2))-height-3;
+                stop = true;
+                t.stop();
+                System.out.println("drop off reached");
+                setWaitOut(testOut.get(6));
+                removeDroppedOff(6);
+            }
+            
+            
+            if (testIn.get(6) > 0)
+            {
+                y = (int)(floors.get(2))-height-3;
+                stop = true;
+                t.stop();
+                setWaitIn(testIn.get(6));
+                removePickedUp(6);
+                convertPassengers(6);
+            }
+            
+            t2.start();
+            
+            if (testOut.get(6) > 1)
                 ElevatorMain.statusLabel.setText("Dropping off ["+ waitOut +"] passengers on floor ["+ currentFloor +"]");
             else
                 ElevatorMain.statusLabel.setText("Picking up ["+ waitIn +"] passengers on floor ["+ currentFloor +"]");
             pickupMap.put(6, 0);
             dropOffMap.put(6,0);
-            t2.start();
+            removeDroppedOff(6);
         }
         
         // Level 5.
-        else if (y+height < (int)floors.get(3) && y > (int)floors.get(3)-height-5 && (int)pickupMap.get(5) > 0 ||
-                    y+height < (int)floors.get(3) && y > (int)floors.get(3)-height-5 && (int)dropOffMap.get(5) > 0)
+        else if (y+height < (int)floors.get(3) && y > (int)floors.get(3)-height-5)
         {
-            y = (int)(floors.get(3))-height-3;
-            stop = true;
-            t.stop();
-            setWait((int)pickupMap.get(5),(int)dropOffMap.get(5));
-            if ((int)dropOffMap.get(5) > 1)
+            
+            if (testOut.get(5)> 0)
+            {
+                y = (int)(floors.get(3))-height-3;
+                stop = true;
+                t.stop();
+                setWaitOut(testOut.get(5));
+            }
+            
+            if (testIn.get(5) > 0)
+            {
+                y = (int)(floors.get(3))-height-3;
+                stop = true;
+                t.stop();
+                setWaitIn(testIn.get(5));
+                removePickedUp(5);
+                convertPassengers(5);
+            }
+            
+            t2.start();
+            
+            if (testOut.get(5) > 1)
                 ElevatorMain.statusLabel.setText("Dropping off ["+ waitOut +"] passengers on floor ["+ currentFloor +"]");
             else
                 ElevatorMain.statusLabel.setText("Picking up ["+ waitIn +"] passengers on floor ["+ currentFloor +"]");
             pickupMap.put(5, 0);
             dropOffMap.put(5,0);
-            t2.start();
         }
         
         // Level 4.
@@ -301,6 +349,7 @@ public class Elevator
             t2.start();
         }
         
+        
         // Updating
         // Increment/decrement y coordinate respectively.
         if (stop != true)
@@ -342,6 +391,65 @@ public class Elevator
     public void stop()
     {
         stop = false;
+    }
+    
+    public int anyToDropOffAt(int floor)
+    {
+        int num = 0;
+        for (Passenger p: ElevatorMain.passengers)
+        {
+            System.out.println(p);
+            if (p.dropOff == floor && p.droppedOff != true)
+                num++;
+        }
+        System.out.println(num + " to drop off.");
+        
+        return num;
+    }
+    
+    public int anyToPickUpAt(int floor)
+    {
+        int num = 0;
+        for (Passenger p: ElevatorMain.passengers)
+        {
+            if (p.floorFrom == floor && p.pickedUp != true)
+            {
+                num++;
+            }
+        }
+        System.out.println(num + " to pick up.");
+        
+        return num;
+    }
+    
+    public void convertPassengers(int floor)
+    {
+        for (Passenger p: ElevatorMain.passengers)
+        {
+            if (p.floorFrom == floor)
+                p.convertDropOff();
+        }
+        System.out.println("Converted dropoffs.");
+    }
+    
+    public void removePickedUp(int floor)
+    {
+        for(int i = 0; i<ElevatorMain.passengers.size(); i++)
+        {
+            if (ElevatorMain.passengers.get(i).floorFrom == floor)
+                ElevatorMain.passengers.get(i).setPickedUp();
+        }
+        System.out.println("Removed pickups for floor "+ floor);
+    }
+    
+    public void removeDroppedOff(int floor)
+    {
+        for(int i = 0; i<ElevatorMain.passengers.size(); i++)
+        {
+            if (ElevatorMain.passengers.get(i).dropOff == floor)
+                ElevatorMain.passengers.get(i).setDroppedOff();
+        }
+        System.out.println("Removed dropoffs for floor "+ floor);
     }
     
     // Sets up individual floor boundaries relative to the current size of the panel.
@@ -403,6 +511,16 @@ public class Elevator
         waitOut = j;
     }
     
+    public void setWaitIn(int i)
+    {
+        waitIn = i;
+    }
+    
+    public void setWaitOut(int i)
+    {
+        waitOut = i;
+    }
+    
     // Timer for picking up passengers.
     // Events fire proportionately to the set wait time.
     class T2Listener implements ActionListener
@@ -412,9 +530,10 @@ public class Elevator
         {
             if (!pushStop)
             {
-                if (waitOut > 0)
+                if (waitOut > 1)
                 {
                     waitOut--;
+                    System.out.println(waitOut);
                     callback.updatePickupLabel(currentFloor,waitOut,"Dropping off");
                     buttons.get(currentFloor-1).setText(currentFloor +" (in: " + waitIn + ", out: "+waitOut+")");
                     if (waitOut == 0)
@@ -437,6 +556,9 @@ public class Elevator
                     stop = false;
                     buttons.get(currentFloor-1).setText(currentFloor+"");
                     buttons.get(currentFloor-1).setBackground(n);
+                    goToButtons.get(currentFloor-1).setText(""+currentFloor);
+                    waitIn = 0;
+                    waitOut = 0;
                 }
             }
         }
