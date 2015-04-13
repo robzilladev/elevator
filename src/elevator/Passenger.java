@@ -2,14 +2,17 @@ package elevator;
 
 public class Passenger
 {
-    int floorFrom, dropOff, preDropOff;
+    int floorFrom, dropOff, preDropOff,seqNo;
     boolean pickedUp = false;
     boolean droppedOff = false;
+    static int counter = 0;
 
     public Passenger(int floorFrom, int preDropOff)
     {
         this.floorFrom = floorFrom;
         this.preDropOff = preDropOff;
+        counter++;
+        seqNo = counter;
     }
 
     public int getFloorFrom()
@@ -45,7 +48,7 @@ public class Passenger
     @Override
     public String toString()
     {
-        return "Floor from: " + floorFrom + " / Pre dropoff: " + preDropOff + " / Actual dropoff: " + dropOff;
+        return "Floor from: " + floorFrom + " / Pre dropoff: " + preDropOff + " / Actual dropoff: " + dropOff + "/ SeqNo: " + seqNo;
     }
     
     

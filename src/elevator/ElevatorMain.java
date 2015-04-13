@@ -719,7 +719,6 @@ public class ElevatorMain extends javax.swing.JFrame
     // Timer listener for elevator animation.
     class TimerListener implements ActionListener
     {
-        int previous = 1;
         @Override
         public void actionPerformed(ActionEvent e)
         {
@@ -858,7 +857,6 @@ public class ElevatorMain extends javax.swing.JFrame
                     p.y = fiveButton.getLocationOnScreen().y;
                     p.x = p.x +3;
                     goToFrame.setLocation(p);
-                    goToFloors.get(4).setEnabled(false);
                }
            }
            else if (e.getSource() == fourButton)
@@ -1215,10 +1213,11 @@ public class ElevatorMain extends javax.swing.JFrame
                 j.setText("8 (" + dropOff.get(8) + ")");
                 System.out.println("Drop off: " + dropOff);
                 
+                passengers.add(new Passenger(floor,8));
+                
                 pickUp.put(floor, pickUp.get(floor) + 1);
                 source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
                 source.setBackground(c);
-                System.out.println(source.getText());
             }
             else if (j == goTo7)
             {
@@ -1226,10 +1225,11 @@ public class ElevatorMain extends javax.swing.JFrame
                 j.setText("7 (" + dropOff.get(7) + ")");
                 System.out.println("Drop off: " + dropOff);
                 
+                passengers.add(new Passenger(floor,7));
+                
                 pickUp.put(floor, pickUp.get(floor) + 1);
                 source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
                 source.setBackground(c);
-                System.out.println(source.getText());
             }
             //Testing objects for passengers.
             else if (j == goTo6)
@@ -1238,12 +1238,10 @@ public class ElevatorMain extends javax.swing.JFrame
                 j.setText("6 (" + dropOff.get(6) + ")");
                 
                 passengers.add(new Passenger(floor,6));
-                System.out.println(passengers.get(0));
                 
                 pickUp.put(floor, pickUp.get(floor) + 1);
                 source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
                 source.setBackground(c);
-                System.out.println(source.getText());
             }
             else if (j == goTo5)
             {
@@ -1251,10 +1249,11 @@ public class ElevatorMain extends javax.swing.JFrame
                 j.setText("5 (" + dropOff.get(5) + ")");
                 System.out.println("Drop off: " + dropOff);
                 
+                passengers.add(new Passenger(floor,5));
+                
                 pickUp.put(floor, pickUp.get(floor) + 1);
                 source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
                 source.setBackground(c);
-                System.out.println(source.getText());
             }
             else if (j == goTo4)
             {
@@ -1262,10 +1261,11 @@ public class ElevatorMain extends javax.swing.JFrame
                 j.setText("4 (" + dropOff.get(4) + ")");
                 System.out.println("Drop off: " + dropOff);
                 
+                passengers.add(new Passenger(floor,4));
+                
                 pickUp.put(floor, pickUp.get(floor) + 1);
                 source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
                 source.setBackground(c);
-                System.out.println(source.getText());
             }
             else if (j == goTo3)
             {
@@ -1273,10 +1273,11 @@ public class ElevatorMain extends javax.swing.JFrame
                 j.setText("3 (" + dropOff.get(3) + ")");
                 System.out.println("Drop off: " + dropOff);
                 
+                passengers.add(new Passenger(floor,3));
+                
                 pickUp.put(floor, pickUp.get(floor) + 1);
                 source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
                 source.setBackground(c);
-                System.out.println(source.getText());
             }
             else if (j == goTo2)
             {
@@ -1284,10 +1285,11 @@ public class ElevatorMain extends javax.swing.JFrame
                 j.setText("2 (" + dropOff.get(2) + ")");
                 System.out.println("Drop off: " + dropOff);
                 
+                passengers.add(new Passenger(floor,2));
+                
                 pickUp.put(floor, pickUp.get(floor) + 1);
                 source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
                 source.setBackground(c);
-                System.out.println(source.getText());
             }
             else if (j == goTo1)
             {
@@ -1295,10 +1297,11 @@ public class ElevatorMain extends javax.swing.JFrame
                 j.setText("1 (" + dropOff.get(1) + ")");
                 System.out.println("Drop off: " + dropOff);
                 
+                passengers.add(new Passenger(floor,1));
+                
                 pickUp.put(floor, pickUp.get(floor) + 1);
                 source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
                 source.setBackground(c);
-                System.out.println(source.getText());
             }
             
             goToFrame.setVisible(false);
@@ -1306,17 +1309,14 @@ public class ElevatorMain extends javax.swing.JFrame
             goToFrame.setEnabled(false);
             System.out.println("Pickup: " + pickUp);
             
-            // Update all floor button labels
+            //Update all floor button labels
             for (int i = 0; i<floors.size(); i++)
             {
                 if (pickUp.get(i+1)>0 || dropOff.get(i+1)>0)
-                floors.get(i).setText(i+1 + " (in: " + pickUp.get(i+1) + ", out: "+dropOff.get(i+1)+")");
+                    floors.get(i).setText(i+1 + " (in: " + pickUp.get(i+1) + ", out: "+dropOff.get(i+1)+")");
             }
             
-            
             hoverTimer.stop();
-            
-            //timer1.start();
         }
         
     }
