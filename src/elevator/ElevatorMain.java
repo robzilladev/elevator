@@ -1216,7 +1216,7 @@ public class ElevatorMain extends javax.swing.JFrame
                 passengers.add(new Passenger(floor,8));
                 
                 pickUp.put(floor, pickUp.get(floor) + 1);
-                source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
+                source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+ elevator.tOut.get(floor).size() +")");
                 source.setBackground(c);
             }
             else if (j == goTo7)
@@ -1228,7 +1228,7 @@ public class ElevatorMain extends javax.swing.JFrame
                 passengers.add(new Passenger(floor,7));
                 
                 pickUp.put(floor, pickUp.get(floor) + 1);
-                source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
+                source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+ elevator.tOut.get(floor).size() +")");
                 source.setBackground(c);
             }
             //Testing objects for passengers.
@@ -1310,11 +1310,11 @@ public class ElevatorMain extends javax.swing.JFrame
             System.out.println("Pickup: " + pickUp);
             
             //Update all floor button labels
-            for (int i = 0; i<floors.size(); i++)
-            {
-                if (pickUp.get(i+1)>0 || dropOff.get(i+1)>0)
-                    floors.get(i).setText(i+1 + " (in: " + pickUp.get(i+1) + ", out: "+dropOff.get(i+1)+")");
-            }
+//            for (int i = 0; i<floors.size(); i++)
+//            {
+//                if (pickUp.get(i+1)>0 || dropOff.get(i+1)>0)
+//                    floors.get(i).setText(i+1 + " (in: " + pickUp.get(i+1) + ", out: "+dropOff.get(i+1)+")");
+//            }
             
             hoverTimer.stop();
         }

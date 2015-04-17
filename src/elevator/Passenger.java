@@ -5,6 +5,7 @@ public class Passenger
     int floorFrom, dropOff, preDropOff,seqNo;
     boolean pickedUp = false;
     boolean droppedOff = false;
+    boolean added = false;
     static int counter = 0;
 
     public Passenger(int floorFrom, int preDropOff)
@@ -43,6 +44,16 @@ public class Passenger
     public void setDroppedOff()
     {
         droppedOff = true;
+    }
+    
+    public void setAdded(boolean b)
+    {
+        added = b;
+    }
+    
+    public boolean added()
+    {
+        return added;
     }
     
     @Override
