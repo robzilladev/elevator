@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -42,6 +43,16 @@ public class ElevatorMain extends javax.swing.JFrame
     static ArrayList<Passenger> passengers;
     
     ImageIcon logo = new javax.swing.ImageIcon(getClass().getResource("/elevator/logo.png"));
+    
+    ImageIcon d1 = new javax.swing.ImageIcon(getClass().getResource("/1.png"));
+    ImageIcon d2 = new javax.swing.ImageIcon(getClass().getResource("/2.png"));
+    ImageIcon d3 = new javax.swing.ImageIcon(getClass().getResource("/3.png"));
+    ImageIcon d4 = new javax.swing.ImageIcon(getClass().getResource("/4.png"));
+    ImageIcon d5 = new javax.swing.ImageIcon(getClass().getResource("/5.png"));
+    ImageIcon d6 = new javax.swing.ImageIcon(getClass().getResource("/4.png"));
+    ImageIcon d7 = new javax.swing.ImageIcon(getClass().getResource("/3.png"));
+    ImageIcon d8 = new javax.swing.ImageIcon(getClass().getResource("/2.png"));
+    ImageIcon d9 = new javax.swing.ImageIcon(getClass().getResource("/1.png"));
     
     // Listeners
     ButtonListenerBottom blb;
@@ -645,6 +656,27 @@ public class ElevatorMain extends javax.swing.JFrame
     {
         int interval = 0;
         boolean first = true;
+        Image img = d1.getImage();
+        
+        public void changeImage()
+        {
+            if (img == d1.getImage())
+                img = d2.getImage();
+            else if (img == d2.getImage())
+                img = d3.getImage();
+            else if (img == d3.getImage())
+                img = d4.getImage();
+            else if (img == d4.getImage())
+                img = d5.getImage();
+            else if (img == d5.getImage())
+                img = d6.getImage();
+            else if (img == d6.getImage())
+                img = d7.getImage();
+            else if (img == d7.getImage())
+                img = d8.getImage();
+            else
+                img = d1.getImage();
+        }
         
         // PaintComponent is called every time the timer generates an event.
         // Measurements should be re-calculated here so that the positioning of the
@@ -690,12 +722,19 @@ public class ElevatorMain extends javax.swing.JFrame
                         elevator.getY(), 
                         elevator.getWidth(), 
                         elevator.getHeight());
+            g2.setColor(Color.darkGray);
+            g2.drawRect(elevator.getX(), 
+                        elevator.getY(), 
+                        elevator.getWidth(), 
+                        elevator.getHeight());
             
-            g2.setColor(Color.white);
             g2.drawLine(elevator.getX()+(elevator.getWidth()/2),
                         elevator.getY()+1,
                         elevator.getX()+(elevator.getWidth()/2),
                         elevator.getY()+(elevator.getHeight())-2);
+            
+//            g2.drawImage(img, 10, 10, elevator.getWidth(), elevator.getHeight(), null);
+//            changeImage();
             
             // Set the upper limit for animation.
             elevator.setUpper(this.getHeight(),floorsAvail);
@@ -1240,7 +1279,7 @@ public class ElevatorMain extends javax.swing.JFrame
                 passengers.add(new Passenger(floor,6));
                 
                 pickUp.put(floor, pickUp.get(floor) + 1);
-                source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
+                source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+ elevator.tOut.get(floor).size() +")");
                 source.setBackground(c);
             }
             else if (j == goTo5)
@@ -1252,7 +1291,7 @@ public class ElevatorMain extends javax.swing.JFrame
                 passengers.add(new Passenger(floor,5));
                 
                 pickUp.put(floor, pickUp.get(floor) + 1);
-                source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
+                source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+ elevator.tOut.get(floor).size() +")");
                 source.setBackground(c);
             }
             else if (j == goTo4)
@@ -1264,7 +1303,7 @@ public class ElevatorMain extends javax.swing.JFrame
                 passengers.add(new Passenger(floor,4));
                 
                 pickUp.put(floor, pickUp.get(floor) + 1);
-                source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
+                source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+ elevator.tOut.get(floor).size() +")");
                 source.setBackground(c);
             }
             else if (j == goTo3)
@@ -1276,7 +1315,7 @@ public class ElevatorMain extends javax.swing.JFrame
                 passengers.add(new Passenger(floor,3));
                 
                 pickUp.put(floor, pickUp.get(floor) + 1);
-                source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
+                source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+ elevator.tOut.get(floor).size() +")");
                 source.setBackground(c);
             }
             else if (j == goTo2)
@@ -1288,7 +1327,7 @@ public class ElevatorMain extends javax.swing.JFrame
                 passengers.add(new Passenger(floor,2));
                 
                 pickUp.put(floor, pickUp.get(floor) + 1);
-                source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
+                source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+ elevator.tOut.get(floor).size() +")");
                 source.setBackground(c);
             }
             else if (j == goTo1)
@@ -1300,7 +1339,7 @@ public class ElevatorMain extends javax.swing.JFrame
                 passengers.add(new Passenger(floor,1));
                 
                 pickUp.put(floor, pickUp.get(floor) + 1);
-                source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+dropOff.get(floor)+")");
+                source.setText(floor + " (in: " + pickUp.get(floor) + ", out: "+ elevator.tOut.get(floor).size() +")");
                 source.setBackground(c);
             }
             
