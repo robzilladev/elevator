@@ -74,6 +74,8 @@ public class ElevatorMain extends javax.swing.JFrame
     // Colors to represent enabled/disabled (buttons).
     Color dis = new Color(102,102,102);
     Color en = new Color(138,138,138);
+    
+    boolean first = true;
     /**
      * Creates new form ElevatorMain
      */
@@ -176,6 +178,7 @@ public class ElevatorMain extends javax.swing.JFrame
         
         // !!!Must be initialised LAST!!!
         elevator = new Elevator(0,0,0,0,timer1,floors,this,goToFloors);
+        elevator.setWidth(60);
     }
 
     /**
@@ -577,7 +580,11 @@ public class ElevatorMain extends javax.swing.JFrame
 
     private void formComponentResized(java.awt.event.ComponentEvent evt)//GEN-FIRST:event_formComponentResized
     {//GEN-HEADEREND:event_formComponentResized
-        // TODO: reposition elevator rectangle when window is resized and timer is not running.
+        // Set width based on window width.
+        if (this.getWidth()<1100)
+            elevator.setWidth(60);
+        if(this.getWidth()>1100)
+            elevator.setWidth(100);
     }//GEN-LAST:event_formComponentResized
 
     /**
@@ -653,7 +660,7 @@ public class ElevatorMain extends javax.swing.JFrame
     class innerCenterPanel extends JPanel
     {
         int interval = 0;
-        boolean first = true;
+        
         Image img = d1.getImage();
         
         public void changeImage()
@@ -706,7 +713,7 @@ public class ElevatorMain extends javax.swing.JFrame
             // Set up elevator.
             elevator.setLimitX((this.getHeight()));
             elevator.setHeight((this.getHeight()/8)-10);
-            elevator.setWidth(60);
+            
             elevator.setX((this.getWidth()/2)-(elevator.getWidth()/2));
             if (first == true)
             {
@@ -720,7 +727,7 @@ public class ElevatorMain extends javax.swing.JFrame
                         elevator.getY(), 
                         elevator.getWidth(), 
                         elevator.getHeight());
-            g2.setColor(Color.darkGray);
+            g2.setColor(new Color(102,102,102));
             g2.drawRect(elevator.getX(), 
                         elevator.getY(), 
                         elevator.getWidth(), 
@@ -844,6 +851,12 @@ public class ElevatorMain extends javax.swing.JFrame
         @Override
         public void actionPerformed(ActionEvent e)
         {
+            // Reenable all buttons on popup.
+            for (JButton b: goToFloors)
+            {
+                b.setEnabled(true);
+                
+            }
            if (e.getSource() == eightButton)
            {
                if (!elevator.isStopped() || elevator.getCurrentFloor() != 8)
@@ -855,6 +868,7 @@ public class ElevatorMain extends javax.swing.JFrame
                    p.y = eightButton.getLocationOnScreen().y;
                    p.x = p.x +3;
                    goToFrame.setLocation(p);
+                   goTo8.setEnabled(false);
                }
            }
            else if (e.getSource() == sevenButton)
@@ -867,6 +881,7 @@ public class ElevatorMain extends javax.swing.JFrame
                    p.y = sevenButton.getLocationOnScreen().y;
                    p.x = p.x +3;
                    goToFrame.setLocation(p);
+                   goTo7.setEnabled(false);
                }
            }
            else if (e.getSource() == sixButton)
@@ -879,6 +894,7 @@ public class ElevatorMain extends javax.swing.JFrame
                     p.y = sixButton.getLocationOnScreen().y;
                     p.x = p.x +3;
                     goToFrame.setLocation(p);
+                    goTo6.setEnabled(false);
                }
            }
            else if (e.getSource() == fiveButton)
@@ -891,6 +907,7 @@ public class ElevatorMain extends javax.swing.JFrame
                     p.y = fiveButton.getLocationOnScreen().y;
                     p.x = p.x +3;
                     goToFrame.setLocation(p);
+                    goTo5.setEnabled(false);
                }
            }
            else if (e.getSource() == fourButton)
@@ -903,6 +920,7 @@ public class ElevatorMain extends javax.swing.JFrame
                     p.y = fourButton.getLocationOnScreen().y-goToFrame.getHeight()+fourButton.getHeight();
                     p.x = p.x +3;
                     goToFrame.setLocation(p);
+                    goTo4.setEnabled(false);
                }
            }
            else if (e.getSource() == threeButton)
@@ -915,6 +933,7 @@ public class ElevatorMain extends javax.swing.JFrame
                     p.y = threeButton.getLocationOnScreen().y-goToFrame.getHeight()+threeButton.getHeight();
                     p.x = p.x +3;
                     goToFrame.setLocation(p);
+                    goTo3.setEnabled(false);
                }
            }
            else if (e.getSource() == twoButton)
@@ -927,6 +946,7 @@ public class ElevatorMain extends javax.swing.JFrame
                     p.y = twoButton.getLocationOnScreen().y-goToFrame.getHeight()+twoButton.getHeight();
                     p.x = p.x +3;
                     goToFrame.setLocation(p);
+                    goTo2.setEnabled(false);
                }
            }
            else if (e.getSource() == oneButton)
@@ -939,6 +959,7 @@ public class ElevatorMain extends javax.swing.JFrame
                     p.y = oneButton.getLocationOnScreen().y-goToFrame.getHeight()+oneButton.getHeight();
                     p.x = p.x +3;
                     goToFrame.setLocation(p);
+                    goTo1.setEnabled(false);
                }
            }
         }
@@ -1060,7 +1081,6 @@ public class ElevatorMain extends javax.swing.JFrame
             {
                delay = speed.get(source.getValue());
                timer1.setDelay(delay);
-               System.out.println(delay);
             }   
         }
     }
