@@ -237,8 +237,17 @@ public class ElevatorMain extends javax.swing.JFrame
         colourButton = new javax.swing.JButton();
         quitButton = new javax.swing.JButton();
 
-        goToFrame.setMaximumSize(null);
         goToFrame.setUndecorated(true);
+        goToFrame.addWindowFocusListener(new java.awt.event.WindowFocusListener()
+        {
+            public void windowGainedFocus(java.awt.event.WindowEvent evt)
+            {
+            }
+            public void windowLostFocus(java.awt.event.WindowEvent evt)
+            {
+                goToFrameWindowLostFocus(evt);
+            }
+        });
 
         goToTopPanel.setBackground(new java.awt.Color(51, 51, 51));
         goToTopPanel.setPreferredSize(new java.awt.Dimension(2, 50));
@@ -586,6 +595,13 @@ public class ElevatorMain extends javax.swing.JFrame
         if(this.getWidth()>1100)
             elevator.setWidth(100);
     }//GEN-LAST:event_formComponentResized
+
+    private void goToFrameWindowLostFocus(java.awt.event.WindowEvent evt)//GEN-FIRST:event_goToFrameWindowLostFocus
+    {//GEN-HEADEREND:event_goToFrameWindowLostFocus
+        // TODO add your handling code here:
+        goToFrame.setVisible(false);
+        goToFrame.setEnabled(false);
+    }//GEN-LAST:event_goToFrameWindowLostFocus
 
     /**
      * @param args the command line arguments
@@ -1287,6 +1303,7 @@ public class ElevatorMain extends javax.swing.JFrame
         {
             goToFrame.setEnabled(false);
             goToFrame.setVisible(false);
+            System.out.println("Focus Lost");
         }
         
         @Override public void focusGained(FocusEvent e){}

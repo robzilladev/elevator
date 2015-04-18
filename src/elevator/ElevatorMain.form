@@ -6,6 +6,9 @@
       <Properties>
         <Property name="undecorated" type="boolean" value="true"/>
       </Properties>
+      <Events>
+        <EventHandler event="windowLostFocus" listener="java.awt.event.WindowFocusListener" parameters="java.awt.event.WindowEvent" handler="goToFrameWindowLostFocus"/>
+      </Events>
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
       <SubComponents>
