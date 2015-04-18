@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import javax.swing.JButton;
 import javax.swing.Timer;
 
@@ -20,30 +19,19 @@ public class Elevator
     private ArrayList floors;
     private ArrayList<JButton> buttons;
     private ArrayList<JButton> goToButtons;
-    
-    private HashMap<Integer,Integer> testIn = new HashMap<Integer,Integer>();
-    private HashMap<Integer,Integer> testOut = new HashMap<Integer,Integer>();
-    
-    private HashMap<Integer,Integer> in = new HashMap<Integer,Integer>();
-    private HashMap<Integer,Integer> out = new HashMap<Integer,Integer>();
-    
-    
+   
     // Testing arrays for each floor
-    ArrayList<Passenger> in8 = new ArrayList<>(); ArrayList<Passenger> out8 = new ArrayList<>();
-    ArrayList<Passenger> in7 = new ArrayList<>(); ArrayList<Passenger> out7 = new ArrayList<>();
-    ArrayList<Passenger> in6 = new ArrayList<>(); ArrayList<Passenger> out6 = new ArrayList<>();
-    ArrayList<Passenger> in5 = new ArrayList<>(); ArrayList<Passenger> out5 = new ArrayList<>();
-    ArrayList<Passenger> in4 = new ArrayList<>(); ArrayList<Passenger> out4 = new ArrayList<>();
-    ArrayList<Passenger> in3 = new ArrayList<>(); ArrayList<Passenger> out3 = new ArrayList<>();
-    ArrayList<Passenger> in2 = new ArrayList<>(); ArrayList<Passenger> out2 = new ArrayList<>();
-    ArrayList<Passenger> in1 = new ArrayList<>(); ArrayList<Passenger> out1 = new ArrayList<>();
-    
-    ArrayList<Passenger> inList = new ArrayList<>(); ArrayList outList = new ArrayList<>();
+    private ArrayList<Passenger> in8 = new ArrayList<>(); private ArrayList<Passenger> out8 = new ArrayList<>();
+    private ArrayList<Passenger> in7 = new ArrayList<>(); private ArrayList<Passenger> out7 = new ArrayList<>();
+    private ArrayList<Passenger> in6 = new ArrayList<>(); private ArrayList<Passenger> out6 = new ArrayList<>();
+    private ArrayList<Passenger> in5 = new ArrayList<>(); private ArrayList<Passenger> out5 = new ArrayList<>();
+    private ArrayList<Passenger> in4 = new ArrayList<>(); private ArrayList<Passenger> out4 = new ArrayList<>();
+    private ArrayList<Passenger> in3 = new ArrayList<>(); private ArrayList<Passenger> out3 = new ArrayList<>();
+    private ArrayList<Passenger> in2 = new ArrayList<>(); private ArrayList<Passenger> out2 = new ArrayList<>();
+    private ArrayList<Passenger> in1 = new ArrayList<>(); private ArrayList<Passenger> out1 = new ArrayList<>();
     
     HashMap<Integer, ArrayList> tIn = new HashMap<>();
     HashMap<Integer, ArrayList> tOut = new HashMap<>();
-    
-    
     
     // Timer variables.
     private Timer t, t2;
@@ -53,11 +41,11 @@ public class Elevator
     private boolean stop = false;
     private boolean pushStop = false;
     
-    //Testing callback
+    // Reference to ElevatorMain frame for access to components (callback).
     private ElevatorMain callback;
     
     // Button not clicked
-    Color n = new Color(102,102,102);
+    private Color n = new Color(102,102,102);
 
     public Elevator(int width, int height, int x, int y, Timer t, ArrayList buttons, ElevatorMain callback, ArrayList goTo)
     {
@@ -80,15 +68,7 @@ public class Elevator
         
         // Timer for passenger exit delay.
         t2 = new Timer(delay, new T2Listener());
-        
-        for (int i = 1; i<9; i++)
-        {
-            out.put(i,0);
-        }
-        for (int i = 1; i<9; i++)
-        {
-            in.put(i,0);
-        }
+        t2.setInitialDelay(0);
         
         tIn.put(1,in1);tIn.put(2,in2);tIn.put(3,in3);tIn.put(4,in4);tIn.put(5,in5);tIn.put(6,in6);tIn.put(7,in7);tIn.put(8,in8);
         tOut.put(1,out1);tOut.put(2,out2);tOut.put(3,out3);tOut.put(4,out4);tOut.put(5,out5);tOut.put(6,out6);tOut.put(7,out7);tOut.put(8,out8);
@@ -189,15 +169,7 @@ public class Elevator
     }
     
     // Updates the position of the moving elevator.
-    // Checks the position of the elevator against the boundaries of each floor
-    // and if there is anyone to pick up on that floor. If the list containing
-    // pickups is not empty on a floor, the main timer stops and another timer is
-    // started, which counts down proportionately to the number in the list.
-    // FLOORS arraylist starts at 0 for floor 8, and 7 for floor 1. (Take the required
-    // floor from 8 to get the index)...
-    // Eg. Floor 6 is at floors.get(2) .. Floor 3 is at floors.get(5) and so on...
-    // PICKUPMAP hashmap elements are identified by the int of the required floor.
-    // Eg. pickupMap.get(8) for floor 8 ... pickupMap.get(3) for floor 3 and so on...
+    // Write some info here *****
     public HashMap update(HashMap pickupMap, HashMap dropOffMap)
     {
         checkFloor();
@@ -245,18 +217,6 @@ public class Elevator
                 p.setAdded(true);
             }
         }
-        
-//        for (int i = 1; i<9; i++)
-//        {
-//            testIn.put(i,anyToPickUpAt(i));
-//        }
-//        
-//        for (int i = 1; i<9; i++)
-//        {
-//            testOut.put(i,anyToDropOffAt(i));
-//        }
-//        System.out.println("Out: " + testOut);
-//        System.out.println("In: " + testIn);
         
         // Level 8.
         if (y+height < (int)floors.get(0) && y > (int)floors.get(0)-height-5)
@@ -378,7 +338,7 @@ public class Elevator
             pickupMap.put(6, 0);
             dropOffMap.put(6,0);
         }
-//        
+        
 //        // Level 5.
         else if (y+height < (int)floors.get(3) && y > (int)floors.get(3)-height-5)
         {
@@ -419,7 +379,7 @@ public class Elevator
             pickupMap.put(5, 0);
             dropOffMap.put(5,0);
         }
-//        
+        
 //        // Level 4.
         else if (y+height < (int)floors.get(4) && y > (int)floors.get(4)-height-5)
         {
@@ -501,7 +461,7 @@ public class Elevator
             pickupMap.put(3, 0);
             dropOffMap.put(3,0);
         }
-//        
+        
 //        // Level 2.
         else if (y+height < (int)floors.get(6) && y > (int)floors.get(6)-height-5)
         {
@@ -542,7 +502,7 @@ public class Elevator
             pickupMap.put(2, 0);
             dropOffMap.put(2,0);
         }
-//        
+        
 //        // Level 1.
         else if (y+height < (int)floors.get(7) && y > (int)floors.get(7)-height-5)
         {
@@ -584,9 +544,6 @@ public class Elevator
             dropOffMap.put(1,0);
         }
         
-        
-        
-        
         // Updating
         // Increment/decrement y coordinate respectively.
         if (stop != true)
@@ -606,11 +563,6 @@ public class Elevator
         return pickupMap;
     }
     
-    // NOT DOING ANYTHING YET!!
-    public void updateButtons()
-    {
-        // Finish this.
-    }
     public boolean stopped()
     {
         return stop;
@@ -670,24 +622,24 @@ public class Elevator
         }
     }
     
-    // Set any successfully picked up passengers to 'picked up' so they
-    // are ignored on further passes.
-    public void removePickedUp(int floor)
+    // Clears all the lists
+    public void clearAllLists()
     {
-        for(int i = 0; i<ElevatorMain.passengers.size(); i++)
+        for(int i = 1; i<9; i++)
         {
-            if (ElevatorMain.passengers.get(i).floorFrom == floor)
-                ElevatorMain.passengers.get(i).setPickedUp();
+            tIn.get(i).clear();
+            tOut.get(i).clear();
         }
     }
     
-    public void removeDroppedOff(int floor)
+    public HashMap getTOut()
     {
-        for(int i = 0; i<ElevatorMain.passengers.size(); i++)
-        {
-            if (ElevatorMain.passengers.get(i).dropOff == floor)
-                ElevatorMain.passengers.get(i).setDroppedOff();
-        }
+        return tOut;
+    }
+    
+    public HashMap getTIn()
+    {
+        return tIn;
     }
     
     // Sets up individual floor boundaries relative to the current size of the panel.
@@ -759,15 +711,6 @@ public class Elevator
         waitOut = i;
     }
     
-    public void setInList(ArrayList p)
-    {
-        inList = p;
-    }
-    public void setOutList(ArrayList p)
-    {
-        outList = p;
-    }
-    
     // Timer for picking up passengers.
     // Events fire proportionately to the set wait time.
     class T2Listener implements ActionListener
@@ -783,16 +726,20 @@ public class Elevator
                     if (waitOut > 0)
                     {
                         System.out.println("Out: " +waitOut);
-                        waitOut--;
+                        
+                        ElevatorMain.statusLabel.setText("Dropping off ["+ waitOut +"] passengers on floor ["+ currentFloor +"]");
                         buttons.get(currentFloor-1).setText(currentFloor +" (in: " + waitIn + ", out: "+waitOut+")");
                         goToButtons.get(currentFloor-1).setText(""+currentFloor+" ("+waitOut+")");
+                        waitOut--;
                         
                     }
                     else if (waitIn > 0)
                     {
                         System.out.println("In: "+waitIn);
-                        waitIn--;
+                        
+                        ElevatorMain.statusLabel.setText("Picking up ["+ waitIn +"] passengers on floor ["+ currentFloor +"]");
                         buttons.get(currentFloor-1).setText(currentFloor +" (in: " + waitIn + ", out: "+waitOut+")");
+                        waitIn--;
                     }
                 }
                 else if (waitOut == 0 || waitIn == 0)
@@ -809,35 +756,7 @@ public class Elevator
                     }
                     
                 }
-                
-                
-                
-                
-//                if (waitOut > 1)
-//                {
-//                    waitOut--;
-//                    callback.updatePickupLabel(currentFloor,waitOut,"Dropping off");
-//                    buttons.get(currentFloor-1).setText(currentFloor +" (in: " + waitIn + ", out: "+waitOut+")");
-//                    goToButtons.get(currentFloor-1).setText(currentFloor + " (" + waitOut + ")");
-//                    
-//                    if (waitIn == 0 && waitOut == 0)
-//                    {
-//                        buttons.get(currentFloor-1).setText(currentFloor+"");
-//                        buttons.get(currentFloor-1).setBackground(n);
-//                    }
-//                }
-//                else if (waitIn > 0)
-//                {
-//                    waitIn--;
-//                    callback.updatePickupLabel(currentFloor,waitIn,"Picking up");
-//                    buttons.get(currentFloor-1).setText(currentFloor +" (in: " + waitIn + ", out: "+waitOut+")");
-//                    
-//                    if (waitIn == 0)
-//                    {
-//                        buttons.get(currentFloor-1).setText(currentFloor+"");
-//                        buttons.get(currentFloor-1).setBackground(n);
-//                    }
-//                }
+
                 if (readyToStop)
                 {
                     t2.stop();
