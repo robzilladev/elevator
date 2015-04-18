@@ -229,6 +229,7 @@ public class Elevator
                 
                 setWaitOut(out8.size());
                 out8.clear();
+                t2.start();
             }
             
             if (in8.size() > 0)
@@ -246,10 +247,10 @@ public class Elevator
                     }
                 }
                 in8.clear();
-                
+                t2.start();
             }
             
-            t2.start();
+            
             
             if (out8.size() > 1)
                 ElevatorMain.statusLabel.setText("Dropping off ["+ waitOut +"] passengers on floor ["+ currentFloor +"]");
@@ -270,6 +271,7 @@ public class Elevator
                 
                 setWaitOut(out7.size());
                 out7.clear();
+                t2.start();
             }
             
             if (in7.size() > 0)
@@ -287,9 +289,10 @@ public class Elevator
                     }
                 }
                 in7.clear();
+                t2.start();
             }
             
-            t2.start();
+            
             
             if (out7.size() > 1)
                 ElevatorMain.statusLabel.setText("Dropping off ["+ waitOut +"] passengers on floor ["+ currentFloor +"]");
@@ -310,6 +313,7 @@ public class Elevator
                 
                 setWaitOut(out6.size());
                 out6.clear();
+                t2.start();
             }
             
             if (in6.size() > 0)
@@ -327,9 +331,10 @@ public class Elevator
                     }
                 }
                 in6.clear();
+                t2.start();
             }
             
-            t2.start();
+            
             
             if (out6.size() > 1)
                 ElevatorMain.statusLabel.setText("Dropping off ["+ waitOut +"] passengers on floor ["+ currentFloor +"]");
@@ -350,7 +355,7 @@ public class Elevator
                 
                 setWaitOut(out5.size());
                 out5.clear();
-                
+                t2.start();
             }
             
             if (in5.size() > 0)
@@ -368,9 +373,10 @@ public class Elevator
                     }
                 }
                 in5.clear();
+                t2.start();
             }
             
-            t2.start();
+            
             
             if (out5.size() > 1)
                 ElevatorMain.statusLabel.setText("Dropping off ["+ waitOut +"] passengers on floor ["+ currentFloor +"]");
@@ -391,7 +397,7 @@ public class Elevator
                 
                 setWaitOut(out4.size());
                 out4.clear();
-                
+                t2.start();
             }
             
             if (in4.size() > 0)
@@ -409,9 +415,10 @@ public class Elevator
                     }
                 }
                 in4.clear();
+                t2.start();
             }
             
-            t2.start();
+            
             
             if (in4.size() > 1)
                 ElevatorMain.statusLabel.setText("Dropping off ["+ waitOut +"] passengers on floor ["+ currentFloor +"]");
@@ -432,7 +439,7 @@ public class Elevator
                 
                 setWaitOut(out3.size());
                 out3.clear();
-                
+                t2.start();
             }
             
             if (in3.size() > 0)
@@ -450,9 +457,10 @@ public class Elevator
                     }
                 }
                 in3.clear();
+                t2.start();
             }
             
-            t2.start();
+            
             
             if (out3.size() > 1)
                 ElevatorMain.statusLabel.setText("Dropping off ["+ waitOut +"] passengers on floor ["+ currentFloor +"]");
@@ -473,7 +481,7 @@ public class Elevator
                 
                 setWaitOut(out2.size());
                 out2.clear();
-                
+                t2.start();
             }
             
             if (in2.size() > 0)
@@ -491,9 +499,10 @@ public class Elevator
                     }
                 }
                 in2.clear();
+                t2.start();
             }
             
-            t2.start();
+            
             
             if (out2.size() > 1)
                 ElevatorMain.statusLabel.setText("Dropping off ["+ waitOut +"] passengers on floor ["+ currentFloor +"]");
@@ -514,7 +523,7 @@ public class Elevator
                 
                 setWaitOut(out1.size());
                 out1.clear();
-                
+                t2.start();
             }
             
             if (in1.size() > 0)
@@ -532,9 +541,8 @@ public class Elevator
                     }
                 }
                 in1.clear();
+                t2.start();
             }
-            
-            t2.start();
             
             if (out1.size() > 1)
                 ElevatorMain.statusLabel.setText("Dropping off ["+ waitOut +"] passengers on floor ["+ currentFloor +"]");
@@ -721,12 +729,13 @@ public class Elevator
         {
             if (!pushStop)
             {
+                callback.setOpening(true);
+                callback.setClosing(false);
+                callback.startDoorTimer();
                 if (waitOut > 0 || waitIn > 0)
                 {
                     if (waitOut > 0)
                     {
-                        System.out.println("Out: " +waitOut);
-                        
                         ElevatorMain.statusLabel.setText("Dropping off ["+ waitOut +"] passengers on floor ["+ currentFloor +"]");
                         buttons.get(currentFloor-1).setText(currentFloor +" (in: " + waitIn + ", out: "+waitOut+")");
                         goToButtons.get(currentFloor-1).setText(""+currentFloor+" ("+waitOut+")");
@@ -735,11 +744,14 @@ public class Elevator
                     }
                     else if (waitIn > 0)
                     {
-                        System.out.println("In: "+waitIn);
-                        
                         ElevatorMain.statusLabel.setText("Picking up ["+ waitIn +"] passengers on floor ["+ currentFloor +"]");
                         buttons.get(currentFloor-1).setText(currentFloor +" (in: " + waitIn + ", out: "+waitOut+")");
                         waitIn--;
+                        
+                        if (waitIn == 1)
+                        {
+                            
+                        }
                     }
                 }
                 else if (waitOut == 0 || waitIn == 0)
@@ -759,6 +771,9 @@ public class Elevator
 
                 if (readyToStop)
                 {
+                    callback.setOpening(false);
+                    callback.setClosing(true);
+                    callback.startDoorTimer();
                     t2.stop();
                     if (!pushStop)
                         t.start();

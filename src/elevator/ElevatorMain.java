@@ -8,8 +8,6 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -29,6 +27,7 @@ public class ElevatorMain extends javax.swing.JFrame
     String floorButtonTooltip, floorComboTooltip, colourTooltip;
     boolean goToClicked = false;
     Timer timer1;
+    Timer doorTimer;
     Elevator elevator; // Main elevator object.
     Timer hoverTimer;
     
@@ -48,10 +47,9 @@ public class ElevatorMain extends javax.swing.JFrame
     ImageIcon d3 = new javax.swing.ImageIcon(getClass().getResource("/3.png"));
     ImageIcon d4 = new javax.swing.ImageIcon(getClass().getResource("/4.png"));
     ImageIcon d5 = new javax.swing.ImageIcon(getClass().getResource("/5.png"));
-    ImageIcon d6 = new javax.swing.ImageIcon(getClass().getResource("/4.png"));
-    ImageIcon d7 = new javax.swing.ImageIcon(getClass().getResource("/3.png"));
-    ImageIcon d8 = new javax.swing.ImageIcon(getClass().getResource("/2.png"));
-    ImageIcon d9 = new javax.swing.ImageIcon(getClass().getResource("/1.png"));
+    ImageIcon d6 = new javax.swing.ImageIcon(getClass().getResource("/6.png"));
+    ImageIcon d7 = new javax.swing.ImageIcon(getClass().getResource("/7.png"));
+    int frame = 1;
     
     // Listeners
     ButtonListenerBottom blb;
@@ -66,16 +64,16 @@ public class ElevatorMain extends javax.swing.JFrame
     
     // Colours for theme.
     int theme = 1;
-    Color theme1 = new Color(110,147,250); //light blue
-    Color theme2 = new Color(61,88,145); //dark blue
-    Color theme3 = new Color(99,65,95); //dark purple
-    Color theme4 = new Color(82,83,84); //dark grey
+    Color theme3 = new Color(61,88,145); //dark blue
+    Color theme2 = new Color(99,65,95); //dark purple
+    Color theme1 = new Color(82,83,84); //dark grey
     
     // Colors to represent enabled/disabled (buttons).
     Color dis = new Color(102,102,102);
     Color en = new Color(138,138,138);
     
     boolean first = true;
+    boolean opening; boolean closing;
     /**
      * Creates new form ElevatorMain
      */
@@ -99,6 +97,11 @@ public class ElevatorMain extends javax.swing.JFrame
         
         delay = 20;
         timer1 = new Timer(delay, new TimerListener());
+        
+        int doorDelay = 10;
+        doorTimer = new Timer(doorDelay, new DoorTimerListener());
+        opening = false;
+        closing = false;
         
         floorsAvail = 8;
         floorComboTooltip = "<html>Choose the number of floors you wish to be active.</html>";
@@ -165,7 +168,6 @@ public class ElevatorMain extends javax.swing.JFrame
         
         // Go to frame stuff
         goToFrame.pack();
-        goToFrame.addFocusListener(new GoToFocusListener());
         goToCancel.addActionListener(gtl); goTo8.addActionListener(gtl);goTo7.addActionListener(gtl);
         goTo6.addActionListener(gtl);goTo5.addActionListener(gtl);goTo4.addActionListener(gtl);
         goTo3.addActionListener(gtl);goTo2.addActionListener(gtl);goTo1.addActionListener(gtl);
@@ -381,7 +383,7 @@ public class ElevatorMain extends javax.swing.JFrame
 
         topPanel.add(topLeftPanel, java.awt.BorderLayout.WEST);
 
-        topRightPanel.setBackground(new java.awt.Color(110, 147, 250));
+        topRightPanel.setBackground(new java.awt.Color(82, 83, 84));
         topRightPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         topRightPanel.setLayout(new java.awt.BorderLayout(0, 2));
 
@@ -498,7 +500,7 @@ public class ElevatorMain extends javax.swing.JFrame
 
         centerPanel.add(innerCenterPanel, java.awt.BorderLayout.CENTER);
 
-        innerRightPanel.setBackground(new java.awt.Color(110, 147, 250));
+        innerRightPanel.setBackground(new java.awt.Color(82, 83, 84));
         innerRightPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
         innerRightPanel.setPreferredSize(new java.awt.Dimension(70, 100));
         innerRightPanel.setLayout(new java.awt.BorderLayout());
@@ -671,33 +673,81 @@ public class ElevatorMain extends javax.swing.JFrame
     private javax.swing.JPanel upperTopRightPanel;
     // End of variables declaration//GEN-END:variables
 
+    Image img = d1.getImage();
+        
+        public void openDoors()
+        {
+            if (frame == 1)
+            {
+                img = d2.getImage();
+                frame = 2;
+            }
+            else if (frame == 2)
+            {
+                img = d3.getImage();
+                frame = 3;
+            }
+            else if (frame == 3)
+            {
+                img = d4.getImage();
+                frame = 4;
+            }
+            else if (frame == 4)
+            {
+                img = d5.getImage();
+                frame = 5;
+            }
+            else if (frame == 5)
+            {
+                img = d6.getImage();
+                frame = 6;
+            }
+            else if (frame == 6)
+            {
+                img = d7.getImage();
+                frame = 7;
+            }
+        }
+        
+        public void closeDoors()
+        {
+            if (frame == 7)
+            {
+                img = d6.getImage();
+                frame = 6;
+            }
+            else if (frame == 6)
+            {
+                img = d5.getImage();
+                frame = 5;
+            }
+            else if (frame == 5)
+            {
+                img = d4.getImage();
+                frame = 4;
+            }
+            else if (frame == 4)
+            {
+                img = d3.getImage();
+                frame = 3;
+            }
+            else if (frame == 3)
+            {
+                img = d2.getImage();
+                frame = 2;
+            }
+            else if (frame == 2)
+            {
+                img = d1.getImage();
+                frame = 1;
+            }
+        }
+    
     // Custom inner class to represent the middle panel.
     // Elevator animation will occur in the overriden paint function.
     class innerCenterPanel extends JPanel
     {
         int interval = 0;
-        
-        Image img = d1.getImage();
-        
-        public void changeImage()
-        {
-            if (img == d1.getImage())
-                img = d2.getImage();
-            else if (img == d2.getImage())
-                img = d3.getImage();
-            else if (img == d3.getImage())
-                img = d4.getImage();
-            else if (img == d4.getImage())
-                img = d5.getImage();
-            else if (img == d5.getImage())
-                img = d6.getImage();
-            else if (img == d6.getImage())
-                img = d7.getImage();
-            else if (img == d7.getImage())
-                img = d8.getImage();
-            else
-                img = d1.getImage();
-        }
         
         // PaintComponent is called every time the timer generates an event.
         // Measurements should be re-calculated here so that the positioning of the
@@ -743,21 +793,24 @@ public class ElevatorMain extends javax.swing.JFrame
                         elevator.getY(), 
                         elevator.getWidth(), 
                         elevator.getHeight());
-            g2.setColor(new Color(102,102,102));
-            g2.drawRect(elevator.getX(), 
-                        elevator.getY(), 
-                        elevator.getWidth(), 
-                        elevator.getHeight());
             
-            g2.drawLine(elevator.getX()+(elevator.getWidth()/2),
-                        elevator.getY()+1,
-                        elevator.getX()+(elevator.getWidth()/2),
-                        elevator.getY()+(elevator.getHeight())-2);
+            // Backup - draw elevator using GRAPHICS OBJECT.
+            // Keep commented out.
+//            g2.setColor(new Color(102,102,102));
+//            g2.drawRect(elevator.getX(), 
+//                        elevator.getY(), 
+//                        elevator.getWidth(), 
+//                        elevator.getHeight());
+//            
+//            g2.drawLine(elevator.getX()+(elevator.getWidth()/2),
+//                        elevator.getY()+1,
+//                        elevator.getX()+(elevator.getWidth()/2),
+//                        elevator.getY()+(elevator.getHeight())-2);
             
-//            g2.drawImage(img, 10, 10, elevator.getWidth(), elevator.getHeight(), null);
-//            changeImage();
+            // Draw elevator using PNG images.
+            g2.drawImage(img, elevator.getX(), elevator.getY(), elevator.getWidth(), elevator.getHeight(), null);
             
-            // Set the upper limit for animation.
+            //Set the upper limit for animation.
             elevator.setUpper(this.getHeight(),floorsAvail);
             
         }
@@ -791,6 +844,39 @@ public class ElevatorMain extends javax.swing.JFrame
                 statusLabel.setText("Going up...");
             
             floorLabel.setText(""+elevator.getCurrentFloor());
+        }
+    }
+    
+    public void startDoorTimer()
+    {
+        doorTimer.start();
+    }
+    
+    public void stopDoorTimer()
+    {
+        doorTimer.stop();
+    }
+    
+    public void setOpening(boolean b)
+    {
+        opening = b;
+    }
+    
+    public void setClosing(boolean b)
+    {
+        closing = b;
+    }
+    
+    class DoorTimerListener implements ActionListener
+    {
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            if (opening)
+                openDoors();
+            else if (closing)
+                closeDoors();
+            repaint();
         }
     }
     
@@ -834,11 +920,6 @@ public class ElevatorMain extends javax.swing.JFrame
                         theme++;
                         break;
                     case 3:
-                        innerRightPanel.setBackground(theme4);
-                        topRightPanel.setBackground(theme4);
-                        theme++;
-                        break;
-                    case 4:
                         innerRightPanel.setBackground(theme1);
                         topRightPanel.setBackground(theme1);
                         theme = 1;
@@ -1129,7 +1210,6 @@ public class ElevatorMain extends javax.swing.JFrame
             {
                 dropOff.put(8, dropOff.get(8)+1);
                 j.setText("8 (" + dropOff.get(8) + ")");
-                System.out.println("Drop off: " + dropOff);
                 
                 passengers.add(new Passenger(floor,8));
                 
@@ -1141,7 +1221,6 @@ public class ElevatorMain extends javax.swing.JFrame
             {
                 dropOff.put(7, dropOff.get(7)+1);
                 j.setText("7 (" + dropOff.get(7) + ")");
-                System.out.println("Drop off: " + dropOff);
                 
                 passengers.add(new Passenger(floor,7));
                 
@@ -1164,7 +1243,6 @@ public class ElevatorMain extends javax.swing.JFrame
             {
                 dropOff.put(5, dropOff.get(5)+1);
                 j.setText("5 (" + dropOff.get(5) + ")");
-                System.out.println("Drop off: " + dropOff);
                 
                 passengers.add(new Passenger(floor,5));
                 
@@ -1176,7 +1254,6 @@ public class ElevatorMain extends javax.swing.JFrame
             {
                 dropOff.put(4, dropOff.get(4)+1);
                 j.setText("4 (" + dropOff.get(4) + ")");
-                System.out.println("Drop off: " + dropOff);
                 
                 passengers.add(new Passenger(floor,4));
                 
@@ -1188,7 +1265,6 @@ public class ElevatorMain extends javax.swing.JFrame
             {
                 dropOff.put(3, dropOff.get(3)+1);
                 j.setText("3 (" + dropOff.get(3) + ")");
-                System.out.println("Drop off: " + dropOff);
                 
                 passengers.add(new Passenger(floor,3));
                 
@@ -1200,7 +1276,6 @@ public class ElevatorMain extends javax.swing.JFrame
             {
                 dropOff.put(2, dropOff.get(2)+1);
                 j.setText("2 (" + dropOff.get(2) + ")");
-                System.out.println("Drop off: " + dropOff);
                 
                 passengers.add(new Passenger(floor,2));
                 
@@ -1212,7 +1287,6 @@ public class ElevatorMain extends javax.swing.JFrame
             {
                 dropOff.put(1, dropOff.get(1)+1);
                 j.setText("1 (" + dropOff.get(1) + ")");
-                System.out.println("Drop off: " + dropOff);
                 
                 passengers.add(new Passenger(floor,1));
                 
@@ -1224,7 +1298,13 @@ public class ElevatorMain extends javax.swing.JFrame
             goToFrame.setVisible(false);
             goToClicked = false;
             goToFrame.setEnabled(false);
-            System.out.println("Pickup: " + pickUp);
+            
+            // Reenable all buttons on popup.
+            for (JButton b: goToFloors)
+            {
+                b.setEnabled(true);
+                
+            }
             
             hoverTimer.stop();
         }
@@ -1295,20 +1375,6 @@ public class ElevatorMain extends javax.swing.JFrame
         }
     }
    
-    // Focus Listener - Captures events fired when the window loses or gains focus.
-    class GoToFocusListener implements FocusListener
-    {
-        @Override
-        public void focusLost(FocusEvent e)
-        {
-            goToFrame.setEnabled(false);
-            goToFrame.setVisible(false);
-            System.out.println("Focus Lost");
-        }
-        
-        @Override public void focusGained(FocusEvent e){}
-    }
-    
     // Represents the bottom half (conaining number buttons) of the popup frame.
     class GoToBottomPanel extends JPanel
     {
